@@ -3,7 +3,7 @@ import call from '../Call';
 import User from './User';
 import { hashPassword } from '../../lib/utils';
 
-module.exports = {
+export default {
   _hashPassword:hashPassword,
   createUser(options, callback = () => {}) {
     if (options.username) options.username = options.username;

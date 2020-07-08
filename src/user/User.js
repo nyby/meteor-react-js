@@ -6,7 +6,7 @@ import Mongo from '../Mongo';
 const TOKEN_KEY = 'reactnativemeteor_usertoken';
 const Users = new Mongo.Collection("users");
 
-module.exports = {
+export default {
   users:Users,
   user() {
     if (!this._userIdSaved) return null;

@@ -1,4 +1,3 @@
-import NetInfo from "@react-native-community/netinfo";
 
 import Trackr from 'trackr';
 import EJSON from 'ejson';
@@ -17,19 +16,21 @@ import ReactiveDict from './ReactiveDict';
 import User from './user/User';
 import Accounts from './user/Accounts';
 
-module.exports = {
+export {
   Random,
   Accounts,
   Mongo,
-  Tracker: Trackr,
+  Trackr as Tracker,
   EJSON,
   ReactiveDict,
   Collection,
+  withTracker,
+}
+export default {
   collection(name, options) {
     console.warn("Meteor.collection is deprecated. Use Mongo.Collection");
     return new Collection(name, options);
   },
-  withTracker,
   getData() {
     return Data;
   },
@@ -88,8 +89,8 @@ module.exports = {
       ...options,
     });
 
-    NetInfo.addEventListener(({type, isConnected, isInternetReachable, isWifiEnabled}) => {
-      if (isConnected && Data.ddp.autoReconnect) {
+    window.addEventListener('online', () => {
+      if (Data.ddp.autoReconnect) {
         Data.ddp.connect();
       }
     });
@@ -135,9 +136,9 @@ module.exports = {
         _id: message.id,
         ...message.fields,
       };
-      
+
       Data.db[message.collection].upsert(document);
-      
+
       runObservers("added", message.collection, document);
     });
 
@@ -172,18 +173,18 @@ module.exports = {
           ...message.fields,
           ...unset,
         };
-        
+
         const oldDocument = Data.db[message.collection].findOne({_id:message.id});
-        
+
         Data.db[message.collection].upsert(document);
-        
-        runObservers("changed", message.collection, document, oldDocument);        
+
+        runObservers("changed", message.collection, document, oldDocument);
       }
     });
 
     Data.ddp.on('removed', message => {
       if(Data.db[message.collection]) {
-        const oldDocument = Data.db[message.collection].findOne({_id:message.id});        
+        const oldDocument = Data.db[message.collection].findOne({_id:message.id});
         Data.db[message.collection].del(message.id);
         runObservers("removed", message.collection, oldDocument);
       }
