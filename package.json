@@ -1,6 +1,6 @@
 {
   "name": "meteor-react-js",
-  "version": "1.0.0",
+  "version": "0.0.1-rc.4",
   "description": "Full Meteor Client for React JS",
   "main": "src/Meteor.js",
   "repository": {
@@ -11,7 +11,7 @@
     "react-component",
     "ddp",
     "meteor",
-    "react",
+    "react"
   ],
   "license": "MIT",
   "dependencies": {
@@ -42,7 +42,6 @@
   },
   "peerDependencies": {
     "react": "*",
-    "@react-native-community/netinfo": "*",
-  },
-  "publishConfig": { "registry": "https://npm.pkg.github.com/" }
+    "@react-native-community/netinfo": "*"
+  }
 }
