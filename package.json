@@ -1,26 +1,19 @@
 {
-  "name": "@meteorrn/core",
-  "version": "2.0.8",
-  "description": "Full Meteor Client for React Native",
+  "name": "meteor-react-js",
+  "version": "1.0.0",
+  "description": "Full Meteor Client for React JS",
   "main": "src/Meteor.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheRealNate/react-native-meteor.git"
+    "url": "git+https://github.com/invena-it/meteor-react-js.git"
   },
   "keywords": [
     "react-component",
     "ddp",
     "meteor",
     "react",
-    "react-native",
-    "ios",
-    "android"
   ],
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/TheRealNate/react-native-meteor/issues"
-  },
-  "homepage": "https://github.com/TheRealNate/react-native-meteor#readme",
   "dependencies": {
     "@babel/runtime": "^7.9.6",
     "base-64": "^0.1.0",
@@ -35,7 +28,7 @@
   },
   "devDependencies": {
     "babel-core": "^6.7.2",
-    "babel-preset-react-native": "^4.0.0",
+    "babel-preset-react": "^4.0.0",
     "chai": "^3.5.0",
     "husky": "^0.14.3",
     "lint-staged": "^7.1.2",
@@ -50,6 +43,6 @@
   "peerDependencies": {
     "react": "*",
     "@react-native-community/netinfo": "*",
-    "react-native": ">= 0.60.0"
-  }
+  },
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" }
 }
