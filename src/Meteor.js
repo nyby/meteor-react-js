@@ -1,4 +1,3 @@
-import React, { useEffect, useState, useReducer, forwardRef } from 'react';
 import Trackr from 'trackr';
 import EJSON from 'ejson';
 import DDP from '../lib/ddp.js';
@@ -10,96 +9,14 @@ import { Collection, runObservers, localCollections } from './Collection';
 import call from './Call';
 
 // import withTracker from './components/ReactMeteorData';
+import { withTracker, withEffect, useTracker } from './components/Helpers'
 
 import ReactiveDict from './ReactiveDict';
 
 import User from './user/User';
 import Accounts from './user/Accounts';
 
-const useTracker = (fn, deps = []) => {
-  const [ data, setData ] = useState(fn());
-  let computation = null;
 
-  const stopComputation = () => {
-    computation && computation.stop();
-    computation = null;
-  };
-
-  useEffect(() => {
-    stopComputation();
-    Trackr.autorun(currentComputation => {
-      computation = currentComputation;
-      setData(fn());
-    });
-    return () => stopComputation();
-  }, [ ...deps ]);
-
-  return data;
-};
-
-const  withTracker = (options, mapStateToProps) => {
-  let expandedOptions = options;
-  if (typeof options === 'function') {
-    expandedOptions = {
-      getMeteorData: options,
-    };
-  }
-
-  const { getMeteorData } = expandedOptions;
-
-  // coalesce meteor api calls, only fire the first call within the throttle time (ms)
-  // const getMeteorData = debounce(func, throttle, { leading: true, trailing: false });
-  return WrappedComponent => {
-    let data = {};
-    let computation = null;
-
-    const WrappedComponentWithRef = props => {
-      let mounted = true;
-      const [ ignored, forceUpdate ] = useReducer(x => x + 1, 0);
-      const { forwardedRef, ...rest } = props;
-
-      useEffect(() => {
-        calculateData();
-        return () => {
-          stopComputation();
-          mounted = false;
-        };
-      }, [ props ]);
-
-      function stopComputation() {
-        if (computation) {
-          computation.stop();
-          computation = null;
-        }
-      }
-
-      function calculateData() {
-        computation = Trackr.nonreactive(() => {
-          Trackr.autorun(() => {
-            const newData = getMeteorData(props);
-            const dataEqual = deepEqual(data, newData);
-            if (!dataEqual && mounted) {
-              data = newData;
-              forceUpdate();
-            }
-          });
-        });
-      }
-
-      return <WrappedComponent ref={forwardedRef} {...rest} {...data} />;
-    };
-
-    const RefComponent = forwardRef((props, ref) => {
-      return <WrappedComponentWithRef {...props} forwardedRef={ref} />;
-    });
-
-    if (mapStateToProps) {
-      return connectWithRef(mapStateToProps)(RefComponent);
-    }
-
-    return RefComponent;
-  };
-}
 
 
 export {
