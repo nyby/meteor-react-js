@@ -1,4 +1,4 @@
-
+import React, { useEffect, useState } from 'react';
 import Trackr from 'trackr';
 import EJSON from 'ejson';
 import DDP from '../lib/ddp.js';
@@ -16,6 +16,27 @@ import ReactiveDict from './ReactiveDict';
 import User from './user/User';
 import Accounts from './user/Accounts';
 
+const useTracker = (fn, deps = []) => {
+  const [ data, setData ] = useState(fn());
+  let computation = null;
+
+  const stopComputation = () => {
+    computation && computation.stop();
+    computation = null;
+  };
+
+  useEffect(() => {
+    stopComputation();
+    Tracker.autorun(currentComputation => {
+      computation = currentComputation;
+      setData(fn());
+    });
+    return () => stopComputation();
+  }, [ ...deps ]);
+
+  return data;
+};
+
 export {
   Random,
   Accounts,
@@ -25,6 +46,7 @@ export {
   ReactiveDict,
   Collection,
   withTracker,
+  useTracker
 }
 export default {
   collection(name, options) {
