@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom';
 import minimongo from 'minimongo-cache';
 import Trackr from 'trackr';
-import { InteractionManager } from 'react-native';
+import { InteractionManager } from 'react-native-web';
 process.nextTick = setImmediate;
 
 const db = new minimongo();

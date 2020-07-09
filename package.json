@@ -22,13 +22,14 @@
     "minimongo-cache": "0.0.48",
     "node-require-fallback": "^1.0.0",
     "prop-types": "^15.5.10",
+    "react-native-web": "^0.13.3",
     "trackr": "^2.0.2",
     "underscore": "^1.8.3",
     "wolfy87-eventemitter": "^4.3.0"
   },
   "devDependencies": {
     "babel-core": "^6.7.2",
-    "babel-preset-react": "^4.0.0",
+    "babel-preset-react": "^6.24.1",
     "chai": "^3.5.0",
     "husky": "^0.14.3",
     "lint-staged": "^7.1.2",
@@ -41,7 +42,7 @@
     "@react-native-community/async-storage": ">=1.8.1"
   },
   "peerDependencies": {
-    "react": "*",
-    "@react-native-community/netinfo": "*"
+    "@react-native-community/netinfo": "*",
+    "react": "*"
   }
 }
