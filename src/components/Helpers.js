@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useReducer, forwardRef } from 'react';
-import deepEqual from 'deep-equal';
+import fde from 'fast-deep-equal';
 import Trackr from 'trackr';
 
 /**
@@ -61,7 +61,7 @@ export function withTracker(options, mapStateToProps) {
         computation = Trackr.nonreactive(() => {
           Trackr.autorun(() => {
             const newData = getMeteorData(props);
-            const dataEqual = deepEqual(data, newData);
+            const dataEqual = fde(data, newData);
             if (!dataEqual && mounted) {
               data = newData;
               forceUpdate();
@@ -99,7 +99,11 @@ export function useTracker(fn, deps = []) {
     stopComputation();
     Trackr.autorun(currentComputation => {
       computation = currentComputation;
-      setData(fn());
+      const newData = fn();
+      const dataEqual = fde(data, newData);
+      if (!dataEqual) {
+        setData(newData);
+      }
     });
     return () => stopComputation();
   }, [ ...deps ]);
