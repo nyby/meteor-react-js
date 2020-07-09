@@ -1,6 +1,6 @@
 {
   "name": "meteor-react-js",
-  "version": "0.0.1-rc.4",
+  "version": "0.0.1-rc4",
   "description": "Full Meteor Client for React JS",
   "main": "src/Meteor.js",
   "repository": {
