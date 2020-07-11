@@ -8,8 +8,8 @@ import Mongo from './Mongo';
 import { Collection, runObservers, localCollections } from './Collection';
 import call from './Call';
 
-// import withTracker from './components/ReactMeteorData';
-import { withTracker, withEffect, useTracker } from './components/Helpers'
+import withTracker from './components/ReactMeteorData';
+import { withEffect, useTracker } from './components/Helpers'
 
 import ReactiveDict from './ReactiveDict';
 
