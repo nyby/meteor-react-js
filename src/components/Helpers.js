@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useReducer, forwardRef } from 'react';
+import React, { useEffect, useState, useReducer, forwardRef, useRef, useMemo } from 'react';
 import fde from 'fast-deep-equal';
 import Trackr from 'trackr';
 
