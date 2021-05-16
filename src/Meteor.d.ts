@@ -1,4 +1,4 @@
-declare module '@meteorrn/core' {
+declare module 'react-meteor-js' {
    function connect(endpoint: string, options?: any): void;
    function disconnect(): void;
    function reconnect(): void;
