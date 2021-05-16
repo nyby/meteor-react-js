@@ -7,7 +7,7 @@ A set of packages allowing you to connect your React app to your Meteor server, 
 [Full API Documentation](/docs/api.md)
 
 # Installation
-`npm install --save react-meteor-js`
+`npm install --save meteor-react-js`
 
 # Basic Usage
 
