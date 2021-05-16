@@ -1,11 +1,11 @@
 {
-  "name": "@meteorrn/core",
-  "version": "2.1.0",
-  "description": "Full Meteor Client for React Native",
+  "name": "meteor-react-js",
+  "version": "1.0.0",
+  "description": "Full Meteor Client for React JS",
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TheRealNate/meteor-react-native.git"
+    "url": "git+https://https://github.com/invena-it/meteor-react-js.git"
   },
   "keywords": [
     "react-component",
@@ -14,10 +14,7 @@
     "react"
   ],
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/TheRealNate/meteor-react-native/issues"
-  },
-  "homepage": "https://github.com/TheRealNate/meteor-react-native#readme",
+  "homepage": "https://github.com/invena-it/meteor-react-js",
   "dependencies": {
     "@babel/runtime": "^7.9.6",
     "base-64": "^0.1.0",
