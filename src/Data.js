@@ -1,19 +1,18 @@
 import ReactDOM from 'react-dom';
 import minimongo from 'minimongo-cache';
 import Trackr from 'trackr';
-import { InteractionManager } from 'react-native-web';
-process.nextTick = setImmediate;
+import setImmediate from 'setimmediate';
+
+// process.nextTick = setImmediate;
 
 const db = new minimongo();
 db.debug = false;
 db.batchedUpdates = ReactDOM.unstable_batchedUpdates;
 
 function runAfterOtherComputations(fn) {
-  InteractionManager.runAfterInteractions(() => {
     Trackr.afterFlush(() => {
       fn();
     });
-  });
 }
 
 export default {
