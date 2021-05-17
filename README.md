@@ -43,3 +43,23 @@ let AppContainer = withTracker(() => {
 
 export default AppContainer;
 ```
+
+# Custom hooks
+
+There are also custom hooks for managing susbscriptions and calling Meteor methods implemented.
+
+usePublication
+
+```javascript
+const [data, loading] = usePublication({
+  name: 'publication.name',
+  params: { id: _id },
+  fetch: () => MyCol.findOne({ _id: id }),
+});
+```
+
+useMethod
+
+```javascript
+const { result, loading } = useMethod('method.name', { id: _id });
+```

@@ -12,6 +12,8 @@ import call from './Call';
 
 import withTracker from './components/withTracker';
 import useTracker from './components/useTracker';
+import usePublication from './components/usePublication';
+import useMethod from './components/useMethod';
 
 import ReactiveDict from './ReactiveDict';
 
@@ -29,10 +31,12 @@ const Meteor = {
   ReactiveDict,
   Collection,
   collection() {
-    throw new Error("Meteor.collection is deprecated. Use Mongo.Collection");
+    throw new Error('Meteor.collection is deprecated. Use Mongo.Collection');
   },
   withTracker,
   useTracker,
+  usePublication,
+  useMethod,
   getData() {
     return Data;
   },
@@ -62,17 +66,22 @@ const Meteor = {
   reconnect() {
     Data.ddp && Data.ddp.connect();
   },
-  packageInterface:() => {
+  packageInterface: () => {
     return {
-      localStorage
+      localStorage,
     };
   },
   connect(endpoint, options) {
     if (!endpoint) endpoint = Data._endpoint;
     if (!options) options = Data._options;
 
-    if((!endpoint.startsWith("ws") || !endpoint.endsWith("/websocket")) && !options.suppressUrlErrors) {
-      throw new Error(`Your url "${endpoint}" may be in the wrong format. It should start with "ws://" or "wss://" and end with "/websocket", e.g. "wss://myapp.meteor.com/websocket". To disable this warning, connect with option "suppressUrlErrors" as true, e.g. Meteor.connect("${endpoint}", {suppressUrlErrors:true});`);
+    if (
+      (!endpoint.startsWith('ws') || !endpoint.endsWith('/websocket')) &&
+      !options.suppressUrlErrors
+    ) {
+      throw new Error(
+        `Your url "${endpoint}" may be in the wrong format. It should start with "ws://" or "wss://" and end with "/websocket", e.g. "wss://myapp.meteor.com/websocket". To disable this warning, connect with option "suppressUrlErrors" as true, e.g. Meteor.connect("${endpoint}", {suppressUrlErrors:true});`
+      );
     }
 
     Data._endpoint = endpoint;
@@ -100,7 +109,8 @@ const Meteor = {
       // Clear the collections of any stale data in case this is a reconnect
       if (Data.db && Data.db.collections) {
         for (var collection in Data.db.collections) {
-          if(!localCollections.includes(collection)) { // Dont clear data from local collections
+          if (!localCollections.includes(collection)) {
+            // Dont clear data from local collections
             Data.db[collection].remove({});
           }
         }
@@ -108,7 +118,7 @@ const Meteor = {
 
       Data.notify('change');
 
-      if(isVerbose) {
+      if (isVerbose) {
         console.info('Connected to DDP server.');
       }
       this._loadInitialUser().then(() => {
@@ -120,7 +130,7 @@ const Meteor = {
     Data.ddp.on('disconnected', () => {
       Data.notify('change');
 
-      if(isVerbose) {
+      if (isVerbose) {
         console.info('Disconnected from DDP server.');
       }
 
@@ -133,7 +143,7 @@ const Meteor = {
       lastDisconnect = new Date();
     });
 
-    Data.ddp.on('added', message => {
+    Data.ddp.on('added', (message) => {
       if (!Data.db[message.collection]) {
         Data.db.addCollection(message.collection);
       }
@@ -144,10 +154,10 @@ const Meteor = {
 
       Data.db[message.collection].upsert(document);
 
-      runObservers("added", message.collection, document);
+      runObservers('added', message.collection, document);
     });
 
-    Data.ddp.on('ready', message => {
+    Data.ddp.on('ready', (message) => {
       const idsMap = new Map();
       for (var i in Data.subscriptions) {
         const sub = Data.subscriptions[i];
@@ -164,44 +174,51 @@ const Meteor = {
       }
     });
 
-    Data.ddp.on('changed', message => {
+    Data.ddp.on('changed', (message) => {
       const unset = {};
       if (message.cleared) {
-        message.cleared.forEach(field => {
+        message.cleared.forEach((field) => {
           unset[field] = null;
         });
       }
 
-      if(Data.db[message.collection]) {
+      if (Data.db[message.collection]) {
         const document = {
           _id: message.id,
           ...message.fields,
           ...unset,
         };
 
-        const oldDocument = Data.db[message.collection].findOne({_id:message.id});
+        const oldDocument = Data.db[message.collection].findOne({
+          _id: message.id,
+        });
 
         Data.db[message.collection].upsert(document);
 
-        runObservers("changed", message.collection, document, oldDocument);
+        runObservers('changed', message.collection, document, oldDocument);
       }
     });
 
-    Data.ddp.on('removed', message => {
-      if(Data.db[message.collection]) {
-        const oldDocument = Data.db[message.collection].findOne({_id:message.id});
+    Data.ddp.on('removed', (message) => {
+      if (Data.db[message.collection]) {
+        const oldDocument = Data.db[message.collection].findOne({
+          _id: message.id,
+        });
         Data.db[message.collection].del(message.id);
-        runObservers("removed", message.collection, oldDocument);
+        runObservers('removed', message.collection, oldDocument);
       }
     });
-    Data.ddp.on('result', message => {
-      const call = Data.calls.find(call => call.id == message.id);
+    Data.ddp.on('result', (message) => {
+      const call = Data.calls.find((call) => call.id == message.id);
       if (typeof call.callback == 'function')
         call.callback(message.error, message.result);
-      Data.calls.splice(Data.calls.findIndex(call => call.id == message.id), 1);
+      Data.calls.splice(
+        Data.calls.findIndex((call) => call.id == message.id),
+        1
+      );
     });
 
-    Data.ddp.on('nosub', message => {
+    Data.ddp.on('nosub', (message) => {
       for (var i in Data.subscriptions) {
         const sub = Data.subscriptions[i];
         if (sub.subIdRemember == message.id) {
@@ -285,7 +302,7 @@ const Meteor = {
         readyDeps: new Trackr.Dependency(),
         readyCallback: callbacks.onReady,
         stopCallback: callbacks.onStop,
-        stop: function() {
+        stop: function () {
           Data.ddp.unsub(this.subIdRemember);
           delete Data.subscriptions[this.id];
           this.ready && this.readyDeps.changed();
@@ -299,10 +316,10 @@ const Meteor = {
 
     // return a handle to the application.
     var handle = {
-      stop: function() {
+      stop: function () {
         if (Data.subscriptions[id]) Data.subscriptions[id].stop();
       },
-      ready: function() {
+      ready: function () {
         if (!Data.subscriptions[id]) return false;
 
         let record = Data.subscriptions[id];
@@ -319,12 +336,12 @@ const Meteor = {
       // as a change to mark the subscription "inactive" so that it can
       // be reused from the rerun.  If it isn't reused, it's killed from
       // an afterFlush.
-      Trackr.onInvalidate(function(c) {
+      Trackr.onInvalidate(function (c) {
         if (Data.subscriptions[id]) {
           Data.subscriptions[id].inactive = true;
         }
 
-        Trackr.afterFlush(function() {
+        Trackr.afterFlush(function () {
           if (Data.subscriptions[id] && Data.subscriptions[id].inactive) {
             handle.stop();
           }
