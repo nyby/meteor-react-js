@@ -1,10 +1,9 @@
 import ReactDOM from 'react-dom';
 import minimongo from 'minimongo-cache';
 import Trackr from 'trackr';
+import setImmediate from 'set-immediate-shim';
 
-process.nextTick = (args) => {
-  setTimeout(args(), 0);
-};
+process.nextTick = setImmediate;
 
 const db = new minimongo();
 db.debug = false;
