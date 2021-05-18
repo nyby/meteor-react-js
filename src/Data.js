@@ -1,18 +1,19 @@
 import ReactDOM from 'react-dom';
 import minimongo from 'minimongo-cache';
 import Trackr from 'trackr';
-import setImmediate from 'setimmediate';
 
-// process.nextTick = setImmediate;
+process.nextTick = (args) => {
+  setTimeout(args(), 0);
+};
 
 const db = new minimongo();
 db.debug = false;
 db.batchedUpdates = ReactDOM.unstable_batchedUpdates;
 
 function runAfterOtherComputations(fn) {
-    Trackr.afterFlush(() => {
-      fn();
-    });
+  Trackr.afterFlush(() => {
+    fn();
+  });
 }
 
 export default {
@@ -61,13 +62,13 @@ export default {
   off(eventName, cb) {
     this._cbs.splice(
       this._cbs.findIndex(
-        _cb => _cb.callback == cb && _cb.eventName == eventName
+        (_cb) => _cb.callback == cb && _cb.eventName == eventName
       ),
       1
     );
   },
   notify(eventName) {
-    this._cbs.map(cb => {
+    this._cbs.map((cb) => {
       if (cb.eventName == eventName && typeof cb.callback == 'function') {
         cb.callback();
       }
