@@ -3,17 +3,15 @@ import { isObject } from 'lodash';
 
 import Meteor from '../Meteor';
 
-export default (name, ...args) => {
+export default (name, args = {}, deps = []) => {
   const [state, setState] = useState({ loading: true });
-  const lastArg = args[args?.length - 1];
-  let deps = Array.isArray(lastArg) ? lastArg : [];
+
   useEffect(() => {
     let mounted = true;
     if (typeof lastArg === 'function' && lastArg() === false) {
       setState({ result: null });
     } else {
-      const a = !Array.isArray(lastArg) ? args : [];
-      Meteor.call(name, ...a, (err, result) => {
+      Meteor.call(name, args, (err, result) => {
         if (err) {
           console.log(err);
         }
@@ -26,6 +24,6 @@ export default (name, ...args) => {
     return () => {
       mounted = false;
     };
-  }, [...deps]);
+  }, deps);
   return state;
 };
