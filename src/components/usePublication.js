@@ -1,7 +1,12 @@
-import { useRef } from 'react';
-import { isObject } from 'lodash';
+/////////////////////////////////////////
+// Authors: Piotr Falba, Wei Zhuo @ Nyby
+/////////////////////////////////////////
 
-import Meteor from '../Meteor';
+import { isObject } from 'lodash';
+import { useEffect, useRef } from 'react';
+import Random from '../../lib/Random';
+import Pub from '../../lib/Pub';
+
 import useTracker from './useTracker';
 
 const depsFromValuesOf = (params) => {
@@ -10,33 +15,23 @@ const depsFromValuesOf = (params) => {
       ? Object.values(params)
       : undefined;
   }
+
   if (Array.isArray(params)) {
     return params;
   }
+
   return typeof params === 'undefined' ? undefined : [params];
 };
 
-const paramsForSub = (params) => {
-  if (Array.isArray(params)) {
-    return params;
-  }
-  return typeof params === 'undefined' ? [] : [params];
-};
-
-const checkIfDepsEmpty = (deps) => {
-  const params = depsFromValuesOf(deps) ? depsFromValuesOf(deps) : [];
-  return Boolean(params.filter((p) => p === '').length);
-};
-
-export default ({ name, params, fetch = () => null }, deps = null) => {
+export default ({ name, params, fetch = () => null }, deps) => {
+  const componentId = Random.id();
   let subscription = useRef().current;
+  useEffect(() => () => Pub.stop(subscription, componentId), []);
+
   return useTracker(() => {
-    const p = paramsForSub(params);
-    if (checkIfDepsEmpty(p)) {
-      return [[], false];
-    }
-    subscription = Meteor.subscribe(name, ...p);
+    subscription = Pub.subscribe(name, params, componentId);
     const result = fetch();
+
     return [result, !subscription.ready() && !result];
   }, deps || depsFromValuesOf(params));
 };
