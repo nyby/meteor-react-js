@@ -1,15 +1,19 @@
+/////////////////////////////////////////
+// Authors: Jakub Kania, Wei Zhuo @ Nyby
+/////////////////////////////////////////
+
 import { useState, useEffect } from 'react';
-import { isObject } from 'lodash';
 
 import Meteor from '../Meteor';
 
 export default (name, args = {}, deps = []) => {
-  const [state, setState] = useState({ loading: true });
+  const [state, setState] = useState({ result: null, loading: true });
+  const allArgsSet = !Object.values(args).some((x) => x === undefined);
 
   useEffect(() => {
     let mounted = true;
-    if (typeof lastArg === 'function' && lastArg() === false) {
-      setState({ result: null });
+    if (!allArgsSet) {
+      setState({ result: null, loading: false });
     } else {
       Meteor.call(name, args, (err, result) => {
         if (err) {
@@ -19,6 +23,7 @@ export default (name, args = {}, deps = []) => {
           setState({ err, result, loading: false });
         }
       });
+      setState({ loading: true });
     }
 
     return () => {

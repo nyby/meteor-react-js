@@ -19,17 +19,14 @@ function depsFromValuesOf(params) {
   return [params];
 }
 
-export default function({ name, params, fetch = () => null }, dependencies) {
+export default function ({ name, params, fetch = () => null }, dependencies) {
   const deps = dependencies || [Meteor.userId(), ...depsFromValuesOf(params)];
   const ref = useRef(null);
   if (ref.current === null) {
     ref.current = { sub: null, id: Random.id() };
   }
   useEffect(() => () => Pub.stop(ref.current.sub, ref.current.id), deps);
-  // const p = JSON.stringify(params);
-  // const s = `${name}(${p}):${JSON.stringify(deps)}:${ref.current.id}`;
   return useTracker(() => {
-    // console.log(`Subscribing: ${s}`);
     ref.current.sub = Pub.subscribe(name, params, ref.current.id);
     const result = fetch();
     return [result, !ref.current.sub.ready() && !result];
