@@ -6,32 +6,32 @@ import { isObject } from 'lodash';
 import { useEffect, useRef } from 'react';
 import Random from '../../lib/Random';
 import Pub from '../../lib/Pub';
-
 import useTracker from './useTracker';
+import Meteor from '../Meteor';
 
-const depsFromValuesOf = (params) => {
+function depsFromValuesOf(params) {
   if (isObject(params)) {
-    return Object.keys(params || {}).length > 0
-      ? Object.values(params)
-      : undefined;
+    return Object.values(params);
   }
-
   if (Array.isArray(params)) {
     return params;
   }
+  return [params];
+}
 
-  return typeof params === 'undefined' ? undefined : [params];
-};
-
-export default ({ name, params, fetch = () => null }, deps) => {
-  const componentId = Random.id();
-  let subscription = useRef().current;
-  useEffect(() => () => Pub.stop(subscription, componentId), []);
-
+export default function({ name, params, fetch = () => null }, dependencies) {
+  const deps = dependencies || [Meteor.userId(), ...depsFromValuesOf(params)];
+  const ref = useRef(null);
+  if (ref.current === null) {
+    ref.current = { sub: null, id: Random.id() };
+  }
+  useEffect(() => () => Pub.stop(ref.current.sub, ref.current.id), deps);
+  // const p = JSON.stringify(params);
+  // const s = `${name}(${p}):${JSON.stringify(deps)}:${ref.current.id}`;
   return useTracker(() => {
-    subscription = Pub.subscribe(name, params, componentId);
+    // console.log(`Subscribing: ${s}`);
+    ref.current.sub = Pub.subscribe(name, params, ref.current.id);
     const result = fetch();
-
-    return [result, !subscription.ready() && !result];
-  }, deps || depsFromValuesOf(params));
-};
+    return [result, !ref.current.sub.ready() && !result];
+  }, deps);
+}
