@@ -1,13 +1,11 @@
-import { name as packageName } from '../package.json';
-
-import Trackr from 'trackr';
+import Trackr from './Tracker';
 import EJSON from 'ejson';
 import DDP from '../lib/ddp.js';
 import Random from '../lib/Random';
 
 import Data from './Data';
 import Mongo from './Mongo';
-import { Collection, runObservers, localCollections } from './Collection';
+import { Collection, localCollections, runObservers } from './Collection';
 import call from './Call';
 
 import withTracker from './components/withTracker';
@@ -42,7 +40,7 @@ const Meteor = {
   },
   status() {
     return {
-      connected: Data.ddp ? Data.ddp.status == 'connected' : false,
+      connected: Data.ddp ? Data.ddp.status === 'connected' : false,
       status: Data.ddp ? Data.ddp.status : 'disconnected',
       //retryCount: 0
       //retryTime:
@@ -56,7 +54,7 @@ const Meteor = {
     }
   },
   _subscriptionsRestart() {
-    for (var i in Data.subscriptions) {
+    for (const i in Data.subscriptions) {
       const sub = Data.subscriptions[i];
       Data.ddp.unsub(sub.subIdRemember);
       sub.subIdRemember = Data.ddp.sub(sub.name, sub.params);
@@ -93,22 +91,10 @@ const Meteor = {
       ...options,
     });
 
-    // try {
-    //   const NetInfo = require("@react-native-community/netinfo").default;
-    //   NetInfo.addEventListener(({type, isConnected, isInternetReachable, isWifiEnabled}) => {
-    //     if (isConnected && Data.ddp.autoReconnect) {
-    //       Data.ddp.connect();
-    //     }
-    //   });
-    // }
-    // catch(e) {
-    //   console.warn("Warning: NetInfo not installed, so DDP will not automatically reconnect");
-    // }
-
     Data.ddp.on('connected', () => {
       // Clear the collections of any stale data in case this is a reconnect
       if (Data.db && Data.db.collections) {
-        for (var collection in Data.db.collections) {
+        for (const collection of Object.keys(Data.db.collections)) {
           if (!localCollections.includes(collection)) {
             // Dont clear data from local collections
             Data.db[collection].remove({});
@@ -159,11 +145,11 @@ const Meteor = {
 
     Data.ddp.on('ready', (message) => {
       const idsMap = new Map();
-      for (var i in Data.subscriptions) {
+      for (const i in Data.subscriptions) {
         const sub = Data.subscriptions[i];
         idsMap.set(sub.subIdRemember, sub.id);
       }
-      for (var i in message.subs) {
+      for (const i in message.subs) {
         const subId = idsMap.get(message.subs[i]);
         if (subId) {
           const sub = Data.subscriptions[subId];
@@ -209,19 +195,19 @@ const Meteor = {
       }
     });
     Data.ddp.on('result', (message) => {
-      const call = Data.calls.find((call) => call.id == message.id);
+      const call = Data.calls.find((call) => call.id === message.id);
       if (typeof call.callback == 'function')
         call.callback(message.error, message.result);
       Data.calls.splice(
-        Data.calls.findIndex((call) => call.id == message.id),
+        Data.calls.findIndex((call) => call.id === message.id),
         1
       );
     });
 
     Data.ddp.on('nosub', (message) => {
-      for (var i in Data.subscriptions) {
+      for (const i in Data.subscriptions) {
         const sub = Data.subscriptions[i];
-        if (sub.subIdRemember == message.id) {
+        if (sub.subIdRemember === message.id) {
           console.warn('No subscription existing for', sub.name);
         }
       }
@@ -281,7 +267,9 @@ const Meteor = {
         // an onReady callback inside an autorun; the semantics we provide is
         // that at the time the sub first becomes ready, we call the last
         // onReady callback provided, if any.)
-        if (!existing.ready) existing.readyCallback = callbacks.onReady;
+        if (!existing.ready) {
+          existing.readyCallback = callbacks.onReady;
+        }
       }
       if (callbacks.onStop) {
         existing.stopCallback = callbacks.onStop;
@@ -315,7 +303,7 @@ const Meteor = {
     }
 
     // return a handle to the application.
-    var handle = {
+    const handle = {
       stop: function () {
         if (Data.subscriptions[id]) Data.subscriptions[id].stop();
       },
@@ -336,7 +324,7 @@ const Meteor = {
       // as a change to mark the subscription "inactive" so that it can
       // be reused from the rerun.  If it isn't reused, it's killed from
       // an afterFlush.
-      Trackr.onInvalidate(function (c) {
+      Trackr.onInvalidate(function () {
         if (Data.subscriptions[id]) {
           Data.subscriptions[id].inactive = true;
         }

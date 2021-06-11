@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom';
 import minimongo from 'minimongo-cache';
-import Trackr from 'trackr';
+import Tracker from './Tracker';
 import setImmediate from 'set-immediate-shim';
 
 process.nextTick = setImmediate;
@@ -10,9 +10,7 @@ db.debug = false;
 db.batchedUpdates = ReactDOM.unstable_batchedUpdates;
 
 function runAfterOtherComputations(fn) {
-  Trackr.afterFlush(() => {
-    fn();
-  });
+  Tracker.afterFlush(() => fn());
 }
 
 export default {
@@ -31,9 +29,7 @@ export default {
     if (this.ddp) {
       cb();
     } else {
-      runAfterOtherComputations(() => {
-        this.waitDdpReady(cb);
-      });
+      runAfterOtherComputations(() => this.waitDdpReady(cb));
     }
   },
 
@@ -53,35 +49,30 @@ export default {
     this.off('change', cb);
   },
   on(eventName, cb) {
-    this._cbs.push({
-      eventName: eventName,
-      callback: cb,
-    });
+    this._cbs.push({ eventName: eventName, callback: cb });
   },
   off(eventName, cb) {
     this._cbs.splice(
       this._cbs.findIndex(
-        (_cb) => _cb.callback == cb && _cb.eventName == eventName
+        (_cb) => _cb.callback === cb && _cb.eventName === eventName
       ),
       1
     );
   },
   notify(eventName) {
     this._cbs.map((cb) => {
-      if (cb.eventName == eventName && typeof cb.callback == 'function') {
+      if (cb.eventName === eventName && typeof cb.callback == 'function') {
         cb.callback();
       }
     });
   },
   waitDdpConnected(cb) {
-    if (this.ddp && this.ddp.status == 'connected') {
+    if (this.ddp && this.ddp.status === 'connected') {
       cb();
     } else if (this.ddp) {
       this.ddp.once('connected', cb);
     } else {
-      setTimeout(() => {
-        this.waitDdpConnected(cb);
-      }, 10);
+      setTimeout(() => this.waitDdpConnected(cb), 10);
     }
   },
 };

@@ -1,4 +1,4 @@
-import Tracker from 'trackr';
+import Tracker from './Tracker';
 import EJSON from 'ejson';
 import _ from 'underscore';
 
@@ -245,16 +245,16 @@ function wrapTransform(transform) {
   // No need to doubly-wrap transforms.
   if (transform.__wrappedTransform__) return transform;
 
-  var wrapped = function (doc) {
+  const wrapped = function (doc) {
     if (!_.has(doc, '_id')) {
       // XXX do we ever have a transform on the oplog's collection? because that
       // collection has no _id.
       throw new Error('can only transform documents with _id');
     }
 
-    var id = doc._id;
+    const id = doc._id;
     // XXX consider making tracker a weak dependency and checking Package.tracker here
-    var transformed = Tracker.nonreactive(function () {
+    const transformed = Tracker.nonreactive(function () {
       return transform(doc);
     });
 

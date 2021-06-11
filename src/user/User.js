@@ -126,7 +126,7 @@ const User = {
     return Data._tokenIdSaved;
   },
   async _loadInitialUser() {
-    var value = null;
+    let value = null;
     try {
       value = await localStorage.getItem(TOKEN_KEY);
     } catch (error) {

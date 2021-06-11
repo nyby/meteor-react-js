@@ -3,12 +3,16 @@ import EJSON from 'ejson';
 import Data from './Data';
 
 const stringify = function (value) {
-  if (value === undefined) return 'undefined';
+  if (value === undefined) {
+    return 'undefined';
+  }
   return EJSON.stringify(value);
 };
 
 const parse = function (serialized) {
-  if (serialized === undefined || serialized === 'undefined') return undefined;
+  if (serialized === undefined || serialized === 'undefined') {
+    return undefined;
+  }
   return EJSON.parse(serialized);
 };
 
@@ -16,7 +20,7 @@ export default class ReactiveDict {
   constructor(dictName) {
     this.keys = {};
     if (typeof dictName === 'object') {
-      for (var i in dictName) {
+      for (const i of Object.keys(dictName)) {
         this.keys[i] = stringify(dictName[i]);
       }
     }
@@ -33,7 +37,7 @@ export default class ReactiveDict {
     value = stringify(value);
 
     let oldSerializedValue = 'undefined';
-    if (Object.keys(this.keys).indexOf(key) != -1) {
+    if (Object.keys(this.keys).indexOf(key) !== -1) {
       oldSerializedValue = this.keys[key];
     }
     if (value === oldSerializedValue) return;
@@ -75,7 +79,7 @@ export default class ReactiveDict {
       throw new Error('ReactiveDict.equals: value must be scalar');
 
     let oldValue = undefined;
-    if (Object.keys(this.keys).indexOf(key) != -1) {
+    if (Object.keys(this.keys).indexOf(key) !== -1) {
       oldValue = parse(this.keys[key]);
     }
     return EJSON.equals(oldValue, value);

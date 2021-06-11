@@ -16,7 +16,7 @@ function depsFromValuesOf(params) {
   if (Array.isArray(params)) {
     return params;
   }
-  return [params];
+  return typeof params === 'undefined' ? [] : [params];
 }
 
 export default function ({ name, params, fetch = () => null }, dependencies) {
