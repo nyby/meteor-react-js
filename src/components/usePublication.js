@@ -24,11 +24,24 @@ export default function ({ name, params, fetch = () => null }, dependencies) {
   const ref = useRef(null);
   if (ref.current === null) {
     ref.current = { sub: null, id: Random.id() };
+    if (Meteor.isVerbose) {
+      const p = JSON.stringify(params);
+      const d = JSON.stringify(deps);
+      console.info(`Use: new ref ${name}(${p})${d}, refId=${ref.current.id}`);
+    }
   }
   useEffect(() => () => Pub.stop(ref.current.sub, ref.current.id), deps);
   return useTracker(() => {
     ref.current.sub = Pub.subscribe(name, params, ref.current.id);
     const result = fetch();
+    if (Meteor.isVerbose) {
+      const p = JSON.stringify(params);
+      const d = JSON.stringify(deps);
+      const r = ref.current.sub.ready();
+      console.info(
+        `Use: ready=${r} ${name}(${p})${d}, refId=${ref.current.id}`
+      );
+    }
     return [result, !ref.current.sub.ready() && !result];
   }, deps);
 }

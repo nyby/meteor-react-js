@@ -258,7 +258,6 @@ Tracker.Computation = class Computation {
    * @locus Client
    */
   invalidate() {
-    console.log('Computation.invalidate()');
     if (!this.invalidated) {
       // if we're currently in _recompute(), don't enqueue
       // ourselves, since we'll rerun immediately anyway.
@@ -287,7 +286,6 @@ Tracker.Computation = class Computation {
   stop() {
     if (!this.stopped) {
       this.stopped = true;
-      console.log('Computation.stop()');
       this.invalidate();
       for (let i = 0, f; (f = this._onStopCallbacks[i]); i++) {
         Tracker.nonreactive(() => withNoYieldsAllowed(f)(this));
@@ -352,7 +350,6 @@ Tracker.Computation = class Computation {
    * @locus Client
    */
   run() {
-    console.log('Computation.run()');
     this.invalidate();
     this.flush();
   }
