@@ -2,7 +2,7 @@
 // Authors: Jakub Kania, Wei Zhuo @ Nyby
 /////////////////////////////////////////
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import Meteor from '../Meteor';
 

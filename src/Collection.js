@@ -10,18 +10,20 @@ import { isPlainObject } from '../lib/utils.js';
 const observers = {};
 
 export const runObservers = (type, collection, newDocument, oldDocument) => {
-  if(observers[collection]) {
-    observers[collection].forEach(({cursor, callbacks}) => {
-      if(callbacks[type]) {
-        if(type === 'removed') {
+  if (observers[collection]) {
+    observers[collection].forEach(({ cursor, callbacks }) => {
+      if (callbacks[type]) {
+        if (type === 'removed') {
           callbacks['removed'](newDocument);
-        }
-        else if(Data.db[collection].findOne({$and:[{_id:newDocument._id}, cursor._selector]})) {
+        } else if (
+          Data.db[collection].findOne({
+            $and: [{ _id: newDocument._id }, cursor._selector],
+          })
+        ) {
           try {
             callbacks[type](newDocument, oldDocument);
-          }
-          catch(e) {
-            console.error("Error in observe callback", e);
+          } catch (e) {
+            console.error('Error in observe callback', e);
           }
         }
       }
@@ -31,7 +33,7 @@ export const runObservers = (type, collection, newDocument, oldDocument) => {
 
 const _registerObserver = (collection, cursor, callbacks) => {
   observers[collection] = observers[collection] || [];
-  observers[collection].push({cursor, callbacks});
+  observers[collection].push({ cursor, callbacks });
 };
 
 class Cursor {
@@ -62,7 +64,7 @@ class Cursor {
       ? this._docs.map(this._collection._transform)
       : this._docs;
   }
-  
+
   observe(callbacks) {
     _registerObserver(this._collection._collection.name, this, callbacks);
   }
@@ -72,12 +74,12 @@ export const localCollections = [];
 
 export class Collection {
   constructor(name, options = {}) {
-    if(name === null) {
+    if (name === null) {
       this.localCollection = true;
       name = Random.id();
       localCollections.push(name);
     }
-    
+
     if (!Data.db[name]) Data.db.addCollection(name);
 
     this._collection = Data.db[name];
@@ -137,15 +139,15 @@ export class Collection {
       });
 
     this._collection.upsert(item);
-    
-    if(!this.localCollection) {
+
+    if (!this.localCollection) {
       Data.waitDdpConnected(() => {
-        call(`/${this._name}/insert`, item, err => {
+        call(`/${this._name}/insert`, item, (err) => {
           if (err) {
             this._collection.del(id);
             return callback(err);
           }
-  
+
           callback(null, id);
         });
       });
@@ -167,14 +169,14 @@ export class Collection {
 
     // change mini mongo for optimize UI changes
     this._collection.upsert({ _id: id, ...modifier.$set });
-    
-    if(!this.localCollection) {
+
+    if (!this.localCollection) {
       Data.waitDdpConnected(() => {
-        call(`/${this._name}/update`, { _id: id }, modifier, err => {
+        call(`/${this._name}/update`, { _id: id }, modifier, (err) => {
           if (err) {
             return callback(err);
           }
-  
+
           callback(null, id);
         });
       });
@@ -187,7 +189,7 @@ export class Collection {
     if (element) {
       this._collection.del(element._id);
 
-      if(!this.localCollection) {
+      if (!this.localCollection) {
         Data.waitDdpConnected(() => {
           call(`/${this._name}/remove`, { _id: id }, (err, res) => {
             if (err) {
@@ -212,7 +214,7 @@ export class Collection {
       this._helpers = function Document(doc) {
         return _.extend(this, doc);
       };
-      this._transform = doc => {
+      this._transform = (doc) => {
         if (_transform) {
           doc = _transform(doc);
         }
@@ -243,7 +245,7 @@ function wrapTransform(transform) {
   // No need to doubly-wrap transforms.
   if (transform.__wrappedTransform__) return transform;
 
-  var wrapped = function(doc) {
+  var wrapped = function (doc) {
     if (!_.has(doc, '_id')) {
       // XXX do we ever have a transform on the oplog's collection? because that
       // collection has no _id.
@@ -252,7 +254,7 @@ function wrapTransform(transform) {
 
     var id = doc._id;
     // XXX consider making tracker a weak dependency and checking Package.tracker here
-    var transformed = Tracker.nonreactive(function() {
+    var transformed = Tracker.nonreactive(function () {
       return transform(doc);
     });
 

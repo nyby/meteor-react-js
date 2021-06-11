@@ -15,6 +15,9 @@
   ],
   "license": "MIT",
   "homepage": "https://github.com/invena-it/meteor-react-js",
+  "scripts": {
+    "format": "./node_modules/.bin/prettier --write '{src,lib,test}/**/*.js*'"
+  },
   "dependencies": {
     "@babel/runtime": "^7.9.6",
     "base-64": "^1.0.0",
