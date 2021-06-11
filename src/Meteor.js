@@ -1,4 +1,4 @@
-import Trackr from './Tracker';
+import Tracker from './Tracker';
 import EJSON from 'ejson';
 import DDP from '../lib/ddp.js';
 import Random from '../lib/Random';
@@ -24,7 +24,7 @@ const Meteor = {
   },
   Random,
   Mongo,
-  Tracker: Trackr,
+  Tracker,
   EJSON,
   ReactiveDict,
   Collection,
@@ -214,7 +214,7 @@ const Meteor = {
     });
   },
   subscribe(name) {
-    let params = Array.prototype.slice.call(arguments, 1);
+    const params = Array.prototype.slice.call(arguments, 1);
     let callbacks = {};
     if (params.length) {
       let lastParam = params[params.length - 1];
@@ -287,7 +287,7 @@ const Meteor = {
         params: EJSON.clone(params),
         inactive: false,
         ready: false,
-        readyDeps: new Trackr.Dependency(),
+        readyDeps: new Tracker.Dependency(),
         readyCallback: callbacks.onReady,
         stopCallback: callbacks.onStop,
         stop: function () {
@@ -305,31 +305,37 @@ const Meteor = {
     // return a handle to the application.
     const handle = {
       stop: function () {
-        if (Data.subscriptions[id]) Data.subscriptions[id].stop();
+        if (Data.subscriptions[id]) {
+          Data.subscriptions[id].stop();
+        }
       },
       ready: function () {
-        if (!Data.subscriptions[id]) return false;
-
-        let record = Data.subscriptions[id];
+        if (!Data.subscriptions[id]) {
+          return false;
+        }
+        const record = Data.subscriptions[id];
         record.readyDeps.depend();
         return record.ready;
       },
       subscriptionId: id,
     };
 
-    if (Trackr.active) {
+    if (Tracker.active) {
       // We're in a reactive computation, so we'd like to unsubscribe when the
       // computation is invalidated... but not if the rerun just re-subscribes
       // to the same subscription!  When a rerun happens, we use onInvalidate
       // as a change to mark the subscription "inactive" so that it can
       // be reused from the rerun.  If it isn't reused, it's killed from
       // an afterFlush.
-      Trackr.onInvalidate(function () {
-        if (Data.subscriptions[id]) {
+      Tracker.onInvalidate(function () {
+        console.log('Tracker.onInvalidate');
+        if (Data.subscriptions[id] && Data.subscriptions[id].ready) {
           Data.subscriptions[id].inactive = true;
         }
 
-        Trackr.afterFlush(function () {
+        Tracker.afterFlush(function () {
+          console.log('Tracker.afterFlush');
+
           if (Data.subscriptions[id] && Data.subscriptions[id].inactive) {
             handle.stop();
           }
