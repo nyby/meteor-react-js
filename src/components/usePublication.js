@@ -1,5 +1,5 @@
 /////////////////////////////////////////
-// Authors: Piotr Falba, Wei Zhuo @ Nyby
+// Authors: Piotr Falba, Wei Zhuo, Jakub Kania @ Nyby
 /////////////////////////////////////////
 
 import { isObject } from 'lodash';
@@ -19,7 +19,11 @@ function depsFromValuesOf(params) {
   return typeof params === 'undefined' ? [] : [params];
 }
 
-export default function ({ name, params, fetch = () => null }, dependencies) {
+export default function (
+  { name, params = {}, fetch = () => null },
+  dependencies
+) {
+  const allArgsSet = !Object.values(params).some((x) => x === undefined);
   const deps = dependencies || [Meteor.userId(), ...depsFromValuesOf(params)];
   const ref = useRef(null);
   if (ref.current === null) {
@@ -27,21 +31,25 @@ export default function ({ name, params, fetch = () => null }, dependencies) {
     if (Meteor.isVerbose) {
       const p = JSON.stringify(params);
       const d = JSON.stringify(deps);
-      console.info(`Use: new ref ${name}(${p})${d}, refId=${ref.current.id}`);
+      // console.info(`Use: new ref ${name}(${p})${d}, refId=${ref.current.id}`);
     }
   }
   useEffect(() => () => Pub.stop(ref.current.sub, ref.current.id), deps);
   return useTracker(() => {
-    ref.current.sub = Pub.subscribe(name, params, ref.current.id);
-    const result = fetch();
-    if (Meteor.isVerbose) {
-      const p = JSON.stringify(params);
-      const d = JSON.stringify(deps);
-      const r = ref.current.sub.ready();
-      console.info(
-        `Use: ready=${r} ${name}(${p})${d}, refId=${ref.current.id}`
-      );
+    if (!allArgsSet) {
+      return [{}, false];
+    } else {
+      ref.current.sub = Pub.subscribe(name, params, ref.current.id);
+      const result = fetch();
+      if (Meteor.isVerbose) {
+        const p = JSON.stringify(params);
+        const d = JSON.stringify(deps);
+        const r = ref.current.sub.ready();
+        // console.info(
+        //   `Use: ready=${r} ${name}(${p})${d}, refId=${ref.current.id}`
+        // );
+      }
+      return [result, !ref.current.sub.ready() && !result];
     }
-    return [result, !ref.current.sub.ready() && !result];
   }, deps);
 }
