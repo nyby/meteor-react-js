@@ -67,6 +67,9 @@ class AccountsPassword {
   };
 
   onLogin = (cb) => {
+    if (Data._tokenIdSaved) {
+      return cb();
+    }
     Data.on('onLogin', cb);
   };
 
