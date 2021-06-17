@@ -26,15 +26,20 @@ export default function (
   const allArgsSet = !Object.values(params).some((x) => x === undefined);
   const deps = dependencies || [Meteor.userId(), ...depsFromValuesOf(params)];
   const ref = useRef(null);
-  if (ref.current === null) {
+  if (ref.current === null && allArgsSet) {
     ref.current = { sub: null, id: Random.id() };
     if (Meteor.isVerbose) {
       const p = JSON.stringify(params);
       const d = JSON.stringify(deps);
-      // console.info(`Use: new ref ${name}(${p})${d}, refId=${ref.current.id}`);
+      console.info(`Use: new ref ${name}(${p})${d}, refId=${ref.current.id}`);
     }
   }
-  useEffect(() => () => Pub.stop(ref.current.sub, ref.current.id), deps);
+  useEffect(
+    () => () => {
+      Pub.stop(ref.current.sub, ref.current.id);
+    },
+    deps
+  );
   return useTracker(() => {
     if (!allArgsSet) {
       return [{}, false];
@@ -45,9 +50,9 @@ export default function (
         const p = JSON.stringify(params);
         const d = JSON.stringify(deps);
         const r = ref.current.sub.ready();
-        // console.info(
-        //   `Use: ready=${r} ${name}(${p})${d}, refId=${ref.current.id}`
-        // );
+        console.info(
+          `Use: ready=${r} ${name}(${p})${d}, refId=${ref.current.id}`
+        );
       }
       return [result, !ref.current.sub.ready() && !result];
     }
