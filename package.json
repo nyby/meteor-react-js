@@ -1,11 +1,11 @@
 {
   "name": "meteor-react-js",
-  "version": "1.1.11",
+  "version": "1.1.12",
   "description": "Full Meteor Client for React JS",
   "main": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/invena-it/meteor-react-js.git"
+    "url": "https://github.com/nyby/meteor-react-js.git"
   },
   "keywords": [
     "react-component",
@@ -14,7 +14,7 @@
     "react"
   ],
   "license": "MIT",
-  "homepage": "https://github.com/invena-it/meteor-react-js",
+  "homepage": "https://github.com/nyby/meteor-react-js.git",
   "scripts": {
     "format": "./node_modules/.bin/prettier --write '{src,lib,test}/**/*.js*'"
   },
