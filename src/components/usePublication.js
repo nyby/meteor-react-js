@@ -36,7 +36,7 @@ export default function (
   }
   useEffect(
     () => () => {
-      Pub.stop(ref.current.sub, ref.current.id);
+      ref.current.sub && Pub.stop(ref.current.sub, ref.current.id);
     },
     deps
   );
