@@ -42,19 +42,19 @@ const Meteor = {
     return {
       connected: Data.ddp ? Data.ddp.status === 'connected' : false,
       status: Data.ddp ? Data.ddp.status : 'disconnected',
-      //retryCount: 0
-      //retryTime:
-      //reason:
+      // retryCount: 0
+      // retryTime:
+      // reason:
     };
   },
-  call: call,
+  call,
   disconnect() {
     if (Data.ddp) {
       Data.ddp.disconnect();
     }
   },
   _subscriptionsRestart() {
-    for (const i in Data.subscriptions) {
+    for (const i of Object.keys(Data.subscriptions)) {
       const sub = Data.subscriptions[i];
       Data.ddp.unsub(sub.subIdRemember);
       sub.subIdRemember = Data.ddp.sub(sub.name, sub.params);
@@ -70,14 +70,16 @@ const Meteor = {
     };
   },
   connect(endpoint, options) {
-    if (!endpoint) endpoint = Data._endpoint;
-    if (!options) options = Data._options;
+    if (!endpoint) {
+      endpoint = Data._endpoint;
+    }
+    if (!options) {
+      options = Data._options;
+    }
 
-    if (
-      (!endpoint.startsWith('ws') || !endpoint.endsWith('/websocket')) &&
-      !options.suppressUrlErrors
-    ) {
+    if ((!endpoint.startsWith('ws') || !endpoint.endsWith('/websocket')) && !options.suppressUrlErrors) {
       throw new Error(
+        // eslint-disable-next-line max-len
         `Your url "${endpoint}" may be in the wrong format. It should start with "ws://" or "wss://" and end with "/websocket", e.g. "wss://myapp.meteor.com/websocket". To disable this warning, connect with option "suppressUrlErrors" as true, e.g. Meteor.connect("${endpoint}", {suppressUrlErrors:true});`
       );
     }
@@ -86,7 +88,7 @@ const Meteor = {
     Data._options = options;
 
     this.ddp = Data.ddp = new DDP({
-      endpoint: endpoint,
+      endpoint,
       SocketConstructor: WebSocket,
       ...options,
     });
@@ -120,7 +122,9 @@ const Meteor = {
         console.info('Disconnected from DDP server.');
       }
 
-      if (!Data.ddp.autoReconnect) return;
+      if (!Data.ddp.autoReconnect) {
+        return;
+      }
 
       if (!lastDisconnect || new Date() - lastDisconnect > 3000) {
         Data.ddp.connect();
@@ -129,7 +133,7 @@ const Meteor = {
       lastDisconnect = new Date();
     });
 
-    Data.ddp.on('added', (message) => {
+    Data.ddp.on('added', message => {
       if (!Data.db[message.collection]) {
         Data.db.addCollection(message.collection);
       }
@@ -140,23 +144,21 @@ const Meteor = {
 
       Data.db[message.collection].upsert(document);
       if (isVerbose) {
-        console.info(
-          `DDP: added to "${message.collection}", _id=${message.id}`
-        );
+        console.info(`DDP: added to "${message.collection}", _id=${message.id}`);
       }
       runObservers('added', message.collection, document);
     });
 
-    Data.ddp.on('ready', (message) => {
+    Data.ddp.on('ready', message => {
       if (isVerbose) {
         console.info(`DDP: ready subs=${message.subs}`);
       }
       const idsMap = new Map();
-      for (const i in Data.subscriptions) {
+      for (const i of Object.keys(Data.subscriptions)) {
         const sub = Data.subscriptions[i];
         idsMap.set(sub.subIdRemember, sub.id);
       }
-      for (const i in message.subs) {
+      for (const i of Object.keys(message.subs)) {
         const subId = idsMap.get(message.subs[i]);
         if (subId) {
           if (isVerbose) {
@@ -170,15 +172,13 @@ const Meteor = {
       }
     });
 
-    Data.ddp.on('changed', (message) => {
+    Data.ddp.on('changed', message => {
       const unset = {};
       if (isVerbose) {
-        console.info(
-          `DDP: changed to "${message.collection}", _id=${message.id}`
-        );
+        console.info(`DDP: changed to "${message.collection}", _id=${message.id}`);
       }
       if (message.cleared) {
-        message.cleared.forEach((field) => {
+        message.cleared.forEach(field => {
           unset[field] = null;
         });
       }
@@ -200,11 +200,9 @@ const Meteor = {
       }
     });
 
-    Data.ddp.on('removed', (message) => {
+    Data.ddp.on('removed', message => {
       if (isVerbose) {
-        console.info(
-          `DDP: removed from "${message.collection}", _id=${message.id}`
-        );
+        console.info(`DDP: removed from "${message.collection}", _id=${message.id}`);
       }
       if (Data.db[message.collection]) {
         const oldDocument = Data.db[message.collection].findOne({
@@ -215,18 +213,19 @@ const Meteor = {
       }
     });
 
-    Data.ddp.on('result', (message) => {
-      const call = Data.calls.find((call) => call.id === message.id);
-      if (typeof call.callback == 'function')
-        call.callback(message.error, message.result);
+    Data.ddp.on('result', message => {
+      const c = Data.calls.find(x => x.id === message.id);
+      if (typeof c.callback === 'function') {
+        c.callback(message.error, message.result);
+      }
       Data.calls.splice(
-        Data.calls.findIndex((call) => call.id === message.id),
+        Data.calls.findIndex(x => x.id === message.id),
         1
       );
     });
 
-    Data.ddp.on('nosub', (message) => {
-      for (const i in Data.subscriptions) {
+    Data.ddp.on('nosub', message => {
+      for (const i of Object.keys(Data.subscriptions)) {
         const sub = Data.subscriptions[i];
         if (sub.subIdRemember === message.id) {
           console.warn('No subscription existing for', sub.name);
@@ -239,13 +238,13 @@ const Meteor = {
     let callbacks = {};
     if (params.length) {
       let lastParam = params[params.length - 1];
-      if (typeof lastParam == 'function') {
+      if (typeof lastParam === 'function') {
         callbacks.onReady = params.pop();
       } else if (
         lastParam &&
-        (typeof lastParam.onReady == 'function' ||
-          typeof lastParam.onError == 'function' ||
-          typeof lastParam.onStop == 'function')
+        (typeof lastParam.onReady === 'function' ||
+          typeof lastParam.onError === 'function' ||
+          typeof lastParam.onStop === 'function')
       ) {
         callbacks = params.pop();
       }
@@ -263,7 +262,7 @@ const Meteor = {
     //     });
     //
     // If "foo" has changed but "bar" has not, we will match the "bar"
-    // subcribe to an existing inactive subscription in order to not
+    // subscribe to an existing inactive subscription in order to not
     // unsub and resub the subscription unnecessarily.
     //
     // We only look for one such sub; if there are N apparently-identical subs
@@ -271,10 +270,11 @@ const Meteor = {
     // them all active.
 
     let existing = false;
-    for (let i in Data.subscriptions) {
+    for (const i of Object.keys(Data.subscriptions)) {
       const sub = Data.subscriptions[i];
-      if (sub.inactive && sub.name === name && EJSON.equals(sub.params, params))
+      if (sub.inactive && sub.name === name && EJSON.equals(sub.params, params)) {
         existing = sub;
+      }
     }
 
     let id;
@@ -301,28 +301,24 @@ const Meteor = {
       id = Random.id();
       const subIdRemember = Data.ddp.sub(name, params);
       if (isVerbose) {
-        console.info(
-          `Meteor: subscribe to "${name}" subId=${id}, sub=${subIdRemember}`
-        );
+        console.info(`Meteor: subscribe to "${name}" subId=${id}, sub=${subIdRemember}`);
       }
       Data.subscriptions[id] = {
-        id: id,
-        subIdRemember: subIdRemember,
-        name: name,
+        id,
+        subIdRemember,
+        name,
         params: EJSON.clone(params),
         inactive: false,
         ready: false,
         readyDeps: new Tracker.Dependency(),
         readyCallback: callbacks.onReady,
         stopCallback: callbacks.onStop,
-        stop: function () {
+        stop() {
           Data.ddp.unsub(this.subIdRemember);
           delete Data.subscriptions[this.id];
           this.ready && this.readyDeps.changed();
           if (isVerbose) {
-            console.info(
-              `Meteor: stop subscription to "${name}" subId=${this.id}, sub=${this.subIdRemember}`
-            );
+            console.info(`Meteor: stop subscription to "${name}" subId=${this.id}, sub=${this.subIdRemember}`);
           }
           if (callbacks.onStop) {
             callbacks.onStop();
@@ -333,12 +329,12 @@ const Meteor = {
 
     // return a handle to the application.
     const handle = {
-      stop: function () {
+      stop() {
         if (Data.subscriptions[id]) {
           Data.subscriptions[id].stop();
         }
       },
-      ready: function () {
+      ready() {
         if (!Data.subscriptions[id]) {
           return false;
         }
@@ -348,7 +344,7 @@ const Meteor = {
       },
       subscriptionId: id,
     };
-    /*
+
     if (Tracker.active) {
       // We're in a reactive computation, so we'd like to unsubscribe when the
       // computation is invalidated... but not if the rerun just re-subscribes
@@ -374,7 +370,6 @@ const Meteor = {
         });
       });
     }
-*/
     return handle;
   },
 };

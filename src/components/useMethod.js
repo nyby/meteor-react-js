@@ -1,6 +1,9 @@
-/////////////////////////////////////////
-// Authors: Jakub Kania, Wei Zhuo @ Nyby
-/////////////////////////////////////////
+/**
+ * @author Piotr Falba
+ * @author Wei Zhuo
+ * @author Jakub Kania
+ * @author Nyby
+ */
 
 import { useEffect, useState } from 'react';
 
@@ -8,7 +11,7 @@ import Meteor from '../Meteor';
 
 export default (name, args = {}, deps = []) => {
   const [state, setState] = useState({ result: null, loading: true });
-  const allArgsSet = !Object.values(args).some((x) => x === undefined);
+  const allArgsSet = !Object.values(args).some(x => x === undefined);
 
   useEffect(() => {
     let mounted = true;
