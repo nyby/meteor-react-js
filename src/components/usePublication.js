@@ -47,8 +47,8 @@ export default function({ name, params = {}, userId, fetch = () => null }, depen
   // stop publications on unmount
   useEffect(
     () => () => {
-      const id = subId(name, deps, ref.current.id);
-      if (ref.current.subs[id]) {
+      const id = subId(name, deps, ref.current?.id);
+      if (ref.current?.subs[id]) {
         if (Meteor.isVerbose()) {
           info(`Unmounting ${ref.current.id}, unsub ${id}`);
         }
@@ -64,8 +64,8 @@ export default function({ name, params = {}, userId, fetch = () => null }, depen
       return [ undefined, false, false ];
     }
     const id = subId(name, deps, ref.current.id);
-    const sub = ref.current?.subs[id] ?? Pub.subscribe(name, params, ref.current.id);
-    if (!ref.current?.subs[id]) {
+    const sub = ref.current.subs[id] ?? Pub.subscribe(name, params, ref.current.id);
+    if (!ref.current.subs[id]) {
       ref.current.subs[id] = sub;
     }
     const result = fetch();
