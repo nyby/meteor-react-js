@@ -10,7 +10,7 @@ import { useEffect, useState } from 'react';
 import Meteor from '../Meteor';
 
 export default (name, args = {}, deps = []) => {
-  const [state, setState] = useState({ result: null, loading: true });
+  const [ state, setState ] = useState({ result: null, loading: true });
   const allArgsSet = !Object.values(args).some(x => x === undefined);
 
   useEffect(() => {

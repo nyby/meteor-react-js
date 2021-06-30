@@ -11,6 +11,7 @@ import Random from '../../lib/Random';
 import Pub from '../../lib/Pub';
 import useTracker from './useTracker';
 import Meteor from '../Meteor';
+import EJSON from 'ejson';
 
 function depsFromValuesOf(params) {
   if (isObject(params)) {
@@ -19,42 +20,63 @@ function depsFromValuesOf(params) {
   if (Array.isArray(params)) {
     return params;
   }
-  return typeof params === 'undefined' ? [] : [params];
+  return typeof params === 'undefined' ? [] : [ params ];
+}
+
+function info(msg) {
+  console.info(`usePub: ${msg}`);
+}
+
+function subId(name, deps, refId) {
+  return EJSON.stringify({ name, deps, refId });
 }
 
 export default function({ name, params = {}, userId, fetch = () => null }, dependencies) {
   const allArgsSet = !Object.values(params).some(x => x === undefined);
-  const deps = dependencies || [userId ?? Meteor.userId(), ...depsFromValuesOf(params)];
+  const deps = dependencies || [ userId ?? Meteor.userId(), ...depsFromValuesOf(params) ];
   const ref = useRef(null);
   if (ref.current === null && allArgsSet) {
-    ref.current = { sub: null, id: Random.id() };
-    if (Meteor.isVerbose) {
+    ref.current = { subs: {}, id: Random.id() };
+    if (Meteor.isVerbose()) {
       const p = JSON.stringify(params);
       const d = JSON.stringify(deps);
-      console.info(`Use: new ref ${name}(${p})${d}, refId=${ref.current.id}`);
+      info(`New ref ${name}(${p})${d}, refId=${ref.current.id}`);
     }
   }
 
   // stop publications on unmount
-  useEffect(() => () => ref.current?.sub && Pub.stop(ref.current.sub, ref.current.id), deps);
+  useEffect(
+    () => () => {
+      const id = subId(name, deps, ref.current.id);
+      if (ref.current.subs[id]) {
+        if (Meteor.isVerbose()) {
+          info(`Unmounting ${ref.current.id}, unsub ${id}`);
+        }
+        Pub.stop(ref.current.subs[id], ref.current.id);
+        delete ref.current.subs[id];
+      }
+    },
+    deps
+  );
 
   return useTracker(() => {
     if (!allArgsSet) {
-      return [undefined, false, false];
-    } else {
-      if (ref.current.sub === null) {
-        ref.current.sub = Pub.subscribe(name, params, ref.current.id);
-      }
-      const result = fetch();
-      if (Meteor.isVerbose) {
-        const p = JSON.stringify(params);
-        const d = JSON.stringify(deps);
-        const r = ref.current.sub.ready();
-        console.info(`Use: ready=${r} ${name}(${p})${d}, refId=${ref.current.id}`);
-      }
-      const isLoading = !ref.current.sub.ready() && !result;
-      const notFound = ref.current.sub.ready() && !result;
-      return [result, isLoading, notFound];
+      return [ undefined, false, false ];
     }
+    const id = subId(name, deps, ref.current.id);
+    const sub = ref.current?.subs[id] ?? Pub.subscribe(name, params, ref.current.id);
+    if (!ref.current?.subs[id]) {
+      ref.current.subs[id] = sub;
+    }
+    const result = fetch();
+    if (Meteor.isVerbose()) {
+      const p = JSON.stringify(params);
+      const d = JSON.stringify(deps);
+      const r = sub.ready();
+      info(`Ready=${r} ${name}(${p})${d}, refId=${ref.current.id}`);
+    }
+    const isLoading = !sub.ready() && !result;
+    const notFound = sub.ready() && !result;
+    return [ result, isLoading, notFound ];
   }, deps);
 }

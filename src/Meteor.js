@@ -17,8 +17,19 @@ import ReactiveDict from './ReactiveDict';
 
 let isVerbose = false;
 
+function debugSub(name, params) {
+  const args = JSON.stringify(params).replace(/^\[|\]$/g, '');
+  return `"${name}"(${args})`;
+}
+
+function info(msg) {
+  console.info(`DDP: ${msg}`);
+}
+
 const Meteor = {
-  isVerbose,
+  isVerbose() {
+    return isVerbose;
+  },
   enableVerbose() {
     isVerbose = true;
   },
@@ -107,7 +118,7 @@ const Meteor = {
       Data.notify('change');
 
       if (isVerbose) {
-        console.info('Connected to DDP server.');
+        info(`Connected to DDP server ${endpoint}`);
       }
       this._loadInitialUser().then(() => {
         this._subscriptionsRestart();
@@ -119,7 +130,7 @@ const Meteor = {
       Data.notify('change');
 
       if (isVerbose) {
-        console.info('Disconnected from DDP server.');
+        info('Disconnected from DDP server.');
       }
 
       if (!Data.ddp.autoReconnect) {
@@ -144,14 +155,14 @@ const Meteor = {
 
       Data.db[message.collection].upsert(document);
       if (isVerbose) {
-        console.info(`DDP: added to "${message.collection}", _id=${message.id}`);
+        info(`Added to "${message.collection}", _id=${message.id}`);
       }
       runObservers('added', message.collection, document);
     });
 
     Data.ddp.on('ready', message => {
       if (isVerbose) {
-        console.info(`DDP: ready subs=${message.subs}`);
+        info(`Ready subs=${message.subs}`);
       }
       const idsMap = new Map();
       for (const i of Object.keys(Data.subscriptions)) {
@@ -162,7 +173,7 @@ const Meteor = {
         const subId = idsMap.get(message.subs[i]);
         if (subId) {
           if (isVerbose) {
-            console.info(`DDP: subscription ready subId=${subId}`);
+            info(`Subscription ready subId=${subId}`);
           }
           const sub = Data.subscriptions[subId];
           sub.ready = true;
@@ -175,7 +186,7 @@ const Meteor = {
     Data.ddp.on('changed', message => {
       const unset = {};
       if (isVerbose) {
-        console.info(`DDP: changed to "${message.collection}", _id=${message.id}`);
+        info(`Changed to "${message.collection}", _id=${message.id}`);
       }
       if (message.cleared) {
         message.cleared.forEach(field => {
@@ -202,7 +213,7 @@ const Meteor = {
 
     Data.ddp.on('removed', message => {
       if (isVerbose) {
-        console.info(`DDP: removed from "${message.collection}", _id=${message.id}`);
+        info(`Removed from "${message.collection}", _id=${message.id}`);
       }
       if (Data.db[message.collection]) {
         const oldDocument = Data.db[message.collection].findOne({
@@ -215,6 +226,9 @@ const Meteor = {
 
     Data.ddp.on('result', message => {
       const c = Data.calls.find(x => x.id === message.id);
+      if (isVerbose) {
+        info(`Method result for id=${message.id}`);
+      }
       if (typeof c.callback === 'function') {
         c.callback(message.error, message.result);
       }
@@ -228,7 +242,7 @@ const Meteor = {
       for (const i of Object.keys(Data.subscriptions)) {
         const sub = Data.subscriptions[i];
         if (sub.subIdRemember === message.id) {
-          console.warn('No subscription existing for', sub.name);
+          console.warn('DDP: No subscription existing for', sub.name);
         }
       }
     });
@@ -301,7 +315,7 @@ const Meteor = {
       id = Random.id();
       const subIdRemember = Data.ddp.sub(name, params);
       if (isVerbose) {
-        console.info(`Meteor: subscribe to "${name}" subId=${id}, sub=${subIdRemember}`);
+        info(`Subscribe to ${debugSub(name, params)} subId=${id}, sub=${subIdRemember}`);
       }
       Data.subscriptions[id] = {
         id,
@@ -318,7 +332,7 @@ const Meteor = {
           delete Data.subscriptions[this.id];
           this.ready && this.readyDeps.changed();
           if (isVerbose) {
-            console.info(`Meteor: stop subscription to "${name}" subId=${this.id}, sub=${this.subIdRemember}`);
+            info(`Stopping ${debugSub(name, params)}  subId=${this.id}, sub=${this.subIdRemember}`);
           }
           if (callbacks.onStop) {
             callbacks.onStop();
@@ -354,7 +368,7 @@ const Meteor = {
       // an afterFlush.
       Tracker.onInvalidate(function() {
         if (isVerbose) {
-          console.log(`Tracker.onInvalidate subId=${id}`);
+          info(`Tracker.onInvalidate subId=${id}`);
         }
         if (Data.subscriptions[id] && Data.subscriptions[id].ready) {
           Data.subscriptions[id].inactive = true;
@@ -362,7 +376,7 @@ const Meteor = {
 
         Tracker.afterFlush(function() {
           if (isVerbose) {
-            console.log(`Tracker.afterFlush subId=${id}`);
+            info(`Tracker.afterFlush subId=${id}`);
           }
           if (Data.subscriptions[id] && Data.subscriptions[id].inactive) {
             handle.stop();

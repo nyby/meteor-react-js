@@ -6,15 +6,23 @@ import Meteor from '../Meteor.js';
 const TOKEN_KEY = 'Meteor.loginToken';
 const Users = new Mongo.Collection('users');
 
+function info(msg) {
+  console.info(`User: ${msg}`);
+}
+
 const User = {
   users: Users,
   user() {
-    if (!User._userIdSaved) return null;
+    if (!User._userIdSaved) {
+      return null;
+    }
 
     return Users.findOne(User._userIdSaved);
   },
   userId() {
-    if (!User._userIdSaved) return null;
+    if (!User._userIdSaved) {
+      return null;
+    }
 
     const user = Users.findOne(User._userIdSaved);
     return user && user._id;
@@ -24,11 +32,11 @@ const User = {
     return User._isLoggingIn;
   },
   logout(callback) {
-    Meteor.call('logout', (err) => {
+    Meteor.call('logout', err => {
       User.handleLogout();
       Meteor.connect();
 
-      typeof callback == 'function' && callback(err);
+      typeof callback === 'function' && callback(err);
     });
   },
   handleLogout() {
@@ -38,8 +46,11 @@ const User = {
   },
   loginWithPassword(selector, password, callback) {
     if (typeof selector === 'string') {
-      if (selector.indexOf('@') === -1) selector = { username: selector };
-      else selector = { email: selector };
+      if (selector.indexOf('@') === -1) {
+        selector = { username: selector };
+      } else {
+        selector = { email: selector };
+      }
     }
 
     User._startLoggingIn();
@@ -54,17 +65,19 @@ const User = {
 
         User._handleLoginCallback(err, result);
 
-        typeof callback == 'function' && callback(err);
+        typeof callback === 'function' && callback(err);
       }
     );
   },
   logoutOtherClients(callback = () => {}) {
     Meteor.call('getNewToken', (err, res) => {
-      if (err) return callback(err);
+      if (err) {
+        return callback(err);
+      }
 
       User._handleLoginCallback(err, res);
 
-      Meteor.call('removeOtherTokens', (err) => {
+      Meteor.call('removeOtherTokens', err => {
         callback(err);
       });
     });
@@ -76,7 +89,7 @@ const User = {
 
       User._handleLoginCallback(err, result);
 
-      typeof callback == 'function' && callback(err);
+      typeof callback === 'function' && callback(err);
     });
   },
   _startLoggingIn() {
@@ -89,20 +102,13 @@ const User = {
   },
   _handleLoginCallback(err, result) {
     if (!err) {
-      Meteor.isVerbose &&
-        console.info(
-          'User._handleLoginCallback::: token:',
-          result.token,
-          'id:',
-          result.id
-        );
+      Meteor.isVerbose() && info('User._handleLoginCallback::: token:', result.token, 'id:', result.id);
       localStorage.setItem(TOKEN_KEY, result.token);
       Data._tokenIdSaved = result.token;
       User._userIdSaved = result.id;
       Data.notify('onLogin');
     } else {
-      Meteor.isVerbose &&
-        console.info('User._handleLoginCallback::: error:', err);
+      Meteor.isVerbose() && info('User._handleLoginCallback::: error:', err);
       Data.notify('onLoginFailure');
       User.handleLogout();
     }
@@ -111,14 +117,14 @@ const User = {
   _loginWithToken(value) {
     Data._tokenIdSaved = value;
     if (value !== null) {
-      Meteor.isVerbose && console.info('User._loginWithToken::: token:', value);
+      Meteor.isVerbose() && info('User._loginWithToken::: token:', value);
       User._startLoggingIn();
       Meteor.call('login', { resume: value }, (err, result) => {
         User._endLoggingIn();
         User._handleLoginCallback(err, result);
       });
     } else {
-      Meteor.isVerbose && console.info('User._loginWithToken::: token is null');
+      Meteor.isVerbose() && info('User._loginWithToken::: token is null');
       User._endLoggingIn();
     }
   },

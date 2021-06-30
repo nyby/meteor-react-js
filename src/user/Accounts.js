@@ -4,6 +4,10 @@ import User from './User';
 import { hashPassword } from '../../lib/utils';
 import Meteor from '../Meteor.js';
 
+function info(msg) {
+  console.info(`Acc: ${msg}`);
+}
+
 class AccountsPassword {
   _hashPassword = hashPassword;
 
@@ -13,9 +17,7 @@ class AccountsPassword {
 
     User._startLoggingIn();
     call('createUser', options, (err, result) => {
-      Meteor.isVerbose &&
-        console.info('Accounts.createUser::: err:', err, 'result:', result);
-
+      Meteor.isVerbose() && info('Accounts.createUser::: err:', err, 'result:', result);
       User._endLoggingIn();
       User._handleLoginCallback(err, result);
       callback(err);
@@ -23,20 +25,15 @@ class AccountsPassword {
   };
 
   changePassword = (oldPassword, newPassword, callback = () => {}) => {
-    //TODO check Meteor.user() to prevent if not logged
+    // TODO check Meteor.user() to prevent if not logged
 
-    if (typeof newPassword != 'string' || !newPassword) {
+    if (typeof newPassword !== 'string' || !newPassword) {
       return callback('Password may not be empty');
     }
 
-    call(
-      'changePassword',
-      oldPassword ? hashPassword(oldPassword) : null,
-      hashPassword(newPassword),
-      (err, res) => {
-        callback(err);
-      }
-    );
+    call('changePassword', oldPassword ? hashPassword(oldPassword) : null, hashPassword(newPassword), (err, res) => {
+      callback(err);
+    });
   };
 
   forgotPassword = (options, callback = () => {}) => {
@@ -44,7 +41,7 @@ class AccountsPassword {
       return callback('Must pass options.email');
     }
 
-    call('forgotPassword', options, (err) => {
+    call('forgotPassword', options, err => {
       callback(err);
     });
   };
@@ -55,8 +52,7 @@ class AccountsPassword {
     }
 
     call('resetPassword', token, hashPassword(newPassword), (err, result) => {
-      Meteor.isVerbose &&
-        console.info('Accounts.resetPassword::: err:', err, 'result:', result);
+      Meteor.isVerbose() && info('Accounts.resetPassword::: err:', err, 'result:', result);
 
       if (!err) {
         User._loginWithToken(result.token);
@@ -66,14 +62,14 @@ class AccountsPassword {
     });
   };
 
-  onLogin = (cb) => {
+  onLogin = cb => {
     if (Data._tokenIdSaved) {
       return cb();
     }
     Data.on('onLogin', cb);
   };
 
-  onLoginFailure = (cb) => {
+  onLoginFailure = cb => {
     Data.on('onLoginFailure', cb);
   };
 }
