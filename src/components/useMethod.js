@@ -9,12 +9,11 @@ import { useEffect, useState } from 'react';
 
 import Meteor from '../Meteor';
 
-export default (name, args = {}, deps = []) => {
-  const [ state, setState ] = useState({ result: null, loading: true });
-  const allArgsSet = !Object.values(args).some(x => x === undefined);
+export default (name, args = {}, deps = [], executeOnMount = false) => {
+  const [state, setState] = useState({ result: null, loading: true });
+  const allArgsSet = !Object.values(args).some((x) => x === undefined);
 
-  useEffect(() => {
-    let mounted = true;
+  const executeCall = () => {
     if (!allArgsSet) {
       setState({ result: null, loading: false });
     } else {
@@ -28,10 +27,23 @@ export default (name, args = {}, deps = []) => {
       });
       setState({ loading: true });
     }
+  };
 
+  useEffect(() => {
+    let mounted = true;
+    executeCall();
     return () => {
       mounted = false;
     };
   }, deps);
+
+  useEffect(() => {
+    let mounted = true;
+    executeOnMount && executeCall();
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   return state;
 };
