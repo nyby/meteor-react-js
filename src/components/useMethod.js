@@ -12,9 +12,8 @@ import Meteor from '../Meteor';
 export default (name, args = {}, deps = [], executeOnMount = false) => {
   const [state, setState] = useState({ result: null, loading: true });
   const allArgsSet = !Object.values(args).some((x) => x === undefined);
-  let mounted = true;
 
-  const executeCall = () => {
+  const executeCall = (mounted) => {
     if (!allArgsSet) {
       setState({ result: null, loading: false });
     } else {
@@ -31,14 +30,16 @@ export default (name, args = {}, deps = [], executeOnMount = false) => {
   };
 
   useEffect(() => {
-    executeCall();
+    let mounted = true;
+    executeCall(mounted);
     return () => {
       mounted = false;
     };
   }, deps);
 
   useEffect(() => {
-    executeOnMount && executeCall();
+    let mounted = true;
+    executeOnMount && executeCall(mounted);
     return () => {
       mounted = false;
     };
