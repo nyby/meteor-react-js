@@ -12,7 +12,7 @@ import withTracker from './components/withTracker';
 import useTracker from './components/useTracker';
 import usePublication from './components/usePublication';
 import useMethod from './components/useMethod';
-
+import Accounts from './user/Accounts.js';
 import ReactiveDict from './ReactiveDict';
 
 let isVerbose = false;
@@ -38,10 +38,8 @@ const Meteor = {
   Tracker,
   EJSON,
   ReactiveDict,
+  Accounts,
   Collection,
-  collection() {
-    throw new Error('Meteor.collection is deprecated. Use Mongo.Collection');
-  },
   withTracker,
   useTracker,
   usePublication,
