@@ -67,9 +67,7 @@ Returns true if attempting to login
 
 <h2 id="tracker">Tracker</h2>
 
-`import { withTracker, useTracker } from 'meteor-react-js'`;
-
-#### `withTracker(trackerFunc)(Component)`
+#### `Meteor.withTracker(trackerFunc)(Component)`
 
 Creates a new Tracker
 
@@ -78,7 +76,7 @@ Creates a new Tracker
 - trackerFunc - Function which will be re-run reactively when it's dependencies are updated. Must return an object that is passed as properties to `Component`
 - Component - React Component which will receive properties from trackerFunc
 
-#### `useTracker(trackerFunc)` => `React Hook`
+#### `Meteor.useTracker(trackerFunc)` => `React Hook`
 
 Creates a new Tracker React Hook. Can only be used inside a function component. See React Docs for more info.
 
@@ -86,26 +84,9 @@ Creates a new Tracker React Hook. Can only be used inside a function component. 
 
 - trackerFunc - Function which will be re-run reactively when it's dependencies are updated.
 
-## ReactiveDict
-
-`import { ReactiveDict } from 'meteor-react-js'`
-
-#### `new ReactiveDict()` => _`ReactiveDict`_
-
-Creates a new reactive dictionary
-
-#### _`ReactiveDict`_
-
-**_ReactiveDict_ Methods:**
-
-- .get(key) - Gets value of key (Reactive)
-- .set(key, value) - Sets value of key
-
 <h2 id="mongo">Mongo</h2>
 
-`import { Mongo } from 'meteor-react-js';`
-
-#### `new Mongo.Collection(collectionName, options)` => `Collection`
+#### `new Meteor.Mongo.Collection(collectionName, options)` => `Collection`
 
 Creates and returns a _Collection_
 
@@ -132,9 +113,7 @@ Creates and returns a _Collection_
 
 <h2 id="accounts">Accounts</h2>
 
-`import { Accounts } from 'meteor-react-js';`
-
-#### `Accounts.createUser(user, callback)`
+#### `Meteor.Accounts.createUser(user, callback)`
 
 Creates a user
 
@@ -143,7 +122,7 @@ Creates a user
 - user - The user object
 - callback - Called with a single error object or null on success
 
-#### `Accounts.changePassword(oldPassword, newPassword)`
+#### `Meteor.Accounts.changePassword(oldPassword, newPassword)`
 
 Changes a user's password
 
@@ -152,7 +131,7 @@ Changes a user's password
 - oldPassword - The user's current password
 - newPassword - The user's new password
 
-#### `Accounts.onLogin(callback)`
+#### `Meteor.Accounts.onLogin(callback)`
 
 Registers a callback to be called when user is logged in
 
@@ -160,7 +139,7 @@ Registers a callback to be called when user is logged in
 
 - callback
 
-#### `Accounts.onLoginFailure(callback)`
+#### `Meteor.Accounts.onLoginFailure(callback)`
 
 Registers a callback to be called when login fails
 
@@ -168,7 +147,7 @@ Registers a callback to be called when login fails
 
 - callback
 
-#### `Accounts._hashPassword(plaintext)` => `{algorithm:"sha-256", digest:"..."}`
+#### `Meteor.Accounts._hashPassword(plaintext)` => `{algorithm:"sha-256", digest:"..."}`
 
 Hashes a password using the sha-256 algorithm. Returns an object formatted for use in accounts calls. You can access the raw hashed string using the digest property.
 
@@ -178,15 +157,5 @@ Hashes a password using the sha-256 algorithm. Returns an object formatted for u
 
 Other:
 
-- [Accounts.forgotPassword](http://docs.meteor.com/#/full/accounts_changepassword)
-- [Accounts.resetPassword](http://docs.meteor.com/#/full/accounts_resetpassword)
-
-## Verbosity
-
-`import { enableVerbose } from 'meteor-react-js';`
-
-Verbose Mode logs detailed information from various places around MeteorRN. **Note:** this will expose login tokens and other private information to the console.
-
-#### `enableVerbose()`
-
-Enables verbose mode
+- [Meteor.Accounts.forgotPassword](http://docs.meteor.com/#/full/accounts_changepassword)
+- [Meteor.Accounts.resetPassword](http://docs.meteor.com/#/full/accounts_resetpassword)

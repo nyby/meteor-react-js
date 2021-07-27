@@ -8,11 +8,22 @@
 import { useEffect, useState } from 'react';
 
 import Meteor from '../Meteor';
+import { isObject } from 'lodash';
 
-export default (name, args = {}, deps = []) => {
-  const [state, setState] = useState({ result: null, loading: true });
-  const allArgsSet = !Object.values(args).some((x) => x === undefined);
+function depsFromValuesOf(params) {
+  if (isObject(params)) {
+    return Object.values(params);
+  }
+  if (Array.isArray(params)) {
+    return params;
+  }
+  return typeof params === 'undefined' ? [] : [ params ];
+}
 
+export default (name, args = {}, dependencies) => {
+  const deps = dependencies || [ Meteor.userId(), ...depsFromValuesOf(args) ];
+  const [ state, setState ] = useState({ result: null, loading: true });
+  const allArgsSet = !Object.values(args).some(x => x === undefined);
   useEffect(() => {
     let mounted = true;
     if (!allArgsSet) {
