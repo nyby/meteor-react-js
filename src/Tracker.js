@@ -153,10 +153,7 @@ let constructingComputation = false;
  */
 Tracker.Computation = class Computation {
   constructor(f, parent, onError) {
-    if (!constructingComputation)
-      throw new Error(
-        'Tracker.Computation constructor is private; use Tracker.autorun'
-      );
+    if (!constructingComputation) throw new Error('Tracker.Computation constructor is private; use Tracker.autorun');
     constructingComputation = false;
 
     // http://docs.meteor.com/#computation_stopped
@@ -222,8 +219,7 @@ Tracker.Computation = class Computation {
    * @param {Function} f Function to be called on invalidation. Receives one argument, the computation that was invalidated.
    */
   onInvalidate(f) {
-    if (typeof f !== 'function')
-      throw new Error('onInvalidate requires a function');
+    if (typeof f !== 'function') throw new Error('onInvalidate requires a function');
 
     if (this.invalidated) {
       Tracker.nonreactive(() => {
@@ -469,8 +465,7 @@ Tracker._runFlush = function (options) {
   // any useful notion of a nested flush.
   //
   // https://app.asana.com/0/159908330244/385138233856
-  if (Tracker.inFlush())
-    throw new Error("Can't call Tracker.flush while flushing");
+  if (Tracker.inFlush()) throw new Error("Can't call Tracker.flush while flushing");
 
   if (inCompute) throw new Error("Can't flush inside Tracker.autorun");
 
@@ -606,8 +601,7 @@ Tracker.nonreactive = function (f) {
  * @param {Function} f A callback function that will be invoked as `func(c)`, where `c` is the computation on which the callback is registered.
  */
 Tracker.onInvalidate = function (f) {
-  if (!Tracker.active)
-    throw new Error('Tracker.onInvalidate requires a currentComputation');
+  if (!Tracker.active) throw new Error('Tracker.onInvalidate requires a currentComputation');
 
   Tracker.currentComputation.onInvalidate(f);
 };

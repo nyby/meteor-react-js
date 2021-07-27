@@ -142,7 +142,7 @@ const Meteor = {
       lastDisconnect = new Date();
     });
 
-    Data.ddp.on('added', message => {
+    Data.ddp.on('added', (message) => {
       if (!Data.db[message.collection]) {
         Data.db.addCollection(message.collection);
       }
@@ -158,7 +158,7 @@ const Meteor = {
       runObservers('added', message.collection, document);
     });
 
-    Data.ddp.on('ready', message => {
+    Data.ddp.on('ready', (message) => {
       if (isVerbose) {
         info(`Ready subs=${message.subs}`);
       }
@@ -181,13 +181,13 @@ const Meteor = {
       }
     });
 
-    Data.ddp.on('changed', message => {
+    Data.ddp.on('changed', (message) => {
       const unset = {};
       if (isVerbose) {
         info(`Changed to "${message.collection}", _id=${message.id}`);
       }
       if (message.cleared) {
-        message.cleared.forEach(field => {
+        message.cleared.forEach((field) => {
           unset[field] = null;
         });
       }
@@ -209,7 +209,7 @@ const Meteor = {
       }
     });
 
-    Data.ddp.on('removed', message => {
+    Data.ddp.on('removed', (message) => {
       if (isVerbose) {
         info(`Removed from "${message.collection}", _id=${message.id}`);
       }
@@ -222,8 +222,8 @@ const Meteor = {
       }
     });
 
-    Data.ddp.on('result', message => {
-      const c = Data.calls.find(x => x.id === message.id);
+    Data.ddp.on('result', (message) => {
+      const c = Data.calls.find((x) => x.id === message.id);
       if (isVerbose) {
         info(`Method result for id=${message.id}`);
       }
@@ -231,12 +231,12 @@ const Meteor = {
         c.callback(message.error, message.result);
       }
       Data.calls.splice(
-        Data.calls.findIndex(x => x.id === message.id),
+        Data.calls.findIndex((x) => x.id === message.id),
         1
       );
     });
 
-    Data.ddp.on('nosub', message => {
+    Data.ddp.on('nosub', (message) => {
       for (const i of Object.keys(Data.subscriptions)) {
         const sub = Data.subscriptions[i];
         if (sub.subIdRemember === message.id) {
@@ -364,7 +364,7 @@ const Meteor = {
       // as a change to mark the subscription "inactive" so that it can
       // be reused from the rerun.  If it isn't reused, it's killed from
       // an afterFlush.
-      Tracker.onInvalidate(function() {
+      Tracker.onInvalidate(function () {
         if (isVerbose) {
           info(`Tracker.onInvalidate subId=${id}`);
         }
@@ -372,7 +372,7 @@ const Meteor = {
           Data.subscriptions[id].inactive = true;
         }
 
-        Tracker.afterFlush(function() {
+        Tracker.afterFlush(function () {
           if (isVerbose) {
             info(`Tracker.afterFlush subId=${id}`);
           }

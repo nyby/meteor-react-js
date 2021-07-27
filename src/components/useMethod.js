@@ -17,13 +17,13 @@ function depsFromValuesOf(params) {
   if (Array.isArray(params)) {
     return params;
   }
-  return typeof params === 'undefined' ? [] : [ params ];
+  return typeof params === 'undefined' ? [] : [params];
 }
 
 export default (name, args = {}, dependencies) => {
-  const deps = dependencies || [ Meteor.userId(), ...depsFromValuesOf(args) ];
-  const [ state, setState ] = useState({ result: null, loading: true });
-  const allArgsSet = !Object.values(args).some(x => x === undefined);
+  const deps = dependencies || [Meteor.userId(), ...depsFromValuesOf(args)];
+  const [state, setState] = useState({ result: null, loading: true });
+  const allArgsSet = !Object.values(args).some((x) => x === undefined);
   useEffect(() => {
     let mounted = true;
     if (!allArgsSet) {

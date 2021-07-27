@@ -3,7 +3,7 @@ import Tracker from '../Tracker';
 import Data from '../Data';
 
 export default (trackerFn, deps = []) => {
-  const [ response, setResponse ] = useState(trackerFn());
+  const [response, setResponse] = useState(trackerFn());
   const meteorDataDep = new Tracker.Dependency();
   let computation = null;
   const dataChangedCallback = () => {
@@ -20,7 +20,7 @@ export default (trackerFn, deps = []) => {
   useEffect(() => {
     stopComputation();
     Tracker.nonreactive(() =>
-      Tracker.autorun(currentComputation => {
+      Tracker.autorun((currentComputation) => {
         meteorDataDep.depend();
         computation = currentComputation;
         setResponse(trackerFn());

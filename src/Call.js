@@ -10,7 +10,7 @@ function info(msg) {
   console.info(`Call: ${msg}`);
 }
 
-export default function(eventName) {
+export default function (eventName) {
   const args = Array.prototype.slice.call(arguments, 1);
   let callback;
   if (args.length && typeof args[args.length - 1] === 'function') {

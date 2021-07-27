@@ -20,7 +20,7 @@ function depsFromValuesOf(params) {
   if (Array.isArray(params)) {
     return params;
   }
-  return typeof params === 'undefined' ? [] : [ params ];
+  return typeof params === 'undefined' ? [] : [params];
 }
 
 function info(msg) {
@@ -31,9 +31,9 @@ function subId(name, deps, refId) {
   return EJSON.stringify({ name, deps, refId });
 }
 
-export default function({ name, params = {}, userId, fetch = () => null }, dependencies) {
-  const allArgsSet = !Object.values(params).some(x => x === undefined);
-  const deps = dependencies || [ userId ?? Meteor.userId(), ...depsFromValuesOf(params) ];
+export default function ({ name, params = {}, userId, fetch = () => null }, dependencies) {
+  const allArgsSet = !Object.values(params).some((x) => x === undefined);
+  const deps = dependencies || [userId ?? Meteor.userId(), ...depsFromValuesOf(params)];
   const ref = useRef(null);
   if (ref.current === null && allArgsSet) {
     ref.current = { subs: {}, id: Random.id() };
@@ -61,7 +61,7 @@ export default function({ name, params = {}, userId, fetch = () => null }, depen
 
   return useTracker(() => {
     if (!allArgsSet) {
-      return [ undefined, false, false ];
+      return [undefined, false, false];
     }
     const id = subId(name, deps, ref.current.id);
     const sub = ref.current.subs[id] ?? Pub.subscribe(name, params, ref.current.id);
@@ -77,6 +77,6 @@ export default function({ name, params = {}, userId, fetch = () => null }, depen
     }
     const isLoading = !sub.ready() && !result;
     const notFound = sub.ready() && !result;
-    return [ result, isLoading, notFound ];
+    return [result, isLoading, notFound];
   }, deps);
 }

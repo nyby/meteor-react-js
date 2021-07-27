@@ -60,9 +60,7 @@ class Cursor {
   }
 
   _transformedDocs() {
-    return this._collection._transform
-      ? this._docs.map(this._collection._transform)
-      : this._docs;
+    return this._collection._transform ? this._docs.map(this._collection._transform) : this._docs;
   }
 
   observe(callbacks) {
@@ -123,9 +121,7 @@ export class Collection {
 
     if ('_id' in item) {
       if (!item._id || typeof item._id != 'string') {
-        return callback(
-          'Meteor requires document _id fields to be non-empty strings'
-        );
+        return callback('Meteor requires document _id fields to be non-empty strings');
       }
       id = item._id;
     } else {

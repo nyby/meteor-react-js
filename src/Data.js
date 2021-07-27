@@ -53,9 +53,7 @@ export default {
   },
   off(eventName, cb) {
     this._cbs.splice(
-      this._cbs.findIndex(
-        (_cb) => _cb.callback === cb && _cb.eventName === eventName
-      ),
+      this._cbs.findIndex((_cb) => _cb.callback === cb && _cb.eventName === eventName),
       1
     );
   },

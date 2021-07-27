@@ -41,7 +41,7 @@ class AccountsPassword {
       return callback('Must pass options.email');
     }
 
-    call('forgotPassword', options, err => {
+    call('forgotPassword', options, (err) => {
       callback(err);
     });
   };
@@ -62,14 +62,14 @@ class AccountsPassword {
     });
   };
 
-  onLogin = cb => {
+  onLogin = (cb) => {
     if (Data._tokenIdSaved) {
       return cb();
     }
     Data.on('onLogin', cb);
   };
 
-  onLoginFailure = cb => {
+  onLoginFailure = (cb) => {
     Data.on('onLoginFailure', cb);
   };
 }
