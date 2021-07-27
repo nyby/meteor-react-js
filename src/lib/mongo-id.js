@@ -1,5 +1,6 @@
-//https://github.com/meteor/meteor/tree/master/packages/mongo-id
+// https://github.com/meteor/meteor/tree/master/packages/mongo-id
 import EJSON from 'ejson';
+import Random from './Random';
 
 const MongoID = {};
 
@@ -8,7 +9,7 @@ MongoID._looksLikeObjectID = function (str) {
 };
 
 MongoID.ObjectID = function (hexString) {
-  //random-based impl of Mongo ObjectID
+  // random-based impl of Mongo ObjectID
   var self = this;
   if (hexString) {
     hexString = hexString.toLowerCase();
@@ -71,9 +72,8 @@ MongoID.idStringify = function (id) {
     ) {
       // escape object-form strings, for maybe implementing later
       return '-' + id;
-    } else {
-      return id; // other strings go through unchanged.
     }
+    return id; // other strings go through unchanged.
   } else if (id === undefined) {
     return '-';
   } else if (typeof id === 'object' && id !== null) {
@@ -95,7 +95,6 @@ MongoID.idParse = function (id) {
     return JSON.parse(id.substr(1));
   } else if (MongoID._looksLikeObjectID(id)) {
     return new MongoID.ObjectID(id);
-  } else {
-    return id;
   }
+  return id;
 };

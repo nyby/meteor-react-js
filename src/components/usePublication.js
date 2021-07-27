@@ -7,8 +7,8 @@
 
 import { isObject } from 'lodash';
 import { useEffect, useRef } from 'react';
-import Random from '../../lib/Random';
-import Pub from '../../lib/Pub';
+import Random from '../lib/Random';
+import Pub from '../lib/Pub';
 import useTracker from './useTracker';
 import Meteor from '../Meteor';
 import EJSON from 'ejson';

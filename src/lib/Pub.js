@@ -6,7 +6,7 @@
  */
 
 import { findKey, uniq } from 'lodash';
-import Meteor from '../src/Meteor';
+import Meteor from '../Meteor';
 import EJSON from 'ejson';
 
 function paramsForSub(params) {

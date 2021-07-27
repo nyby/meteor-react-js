@@ -3,9 +3,9 @@ import EJSON from 'ejson';
 import _ from 'underscore';
 
 import Data from './Data';
-import Random from '../lib/Random';
+import Random from './lib/Random';
 import call from './Call';
-import { isPlainObject } from '../lib/utils.js';
+import { isPlainObject } from './lib/utils.js';
 
 const observers = {};
 
@@ -78,7 +78,9 @@ export class Collection {
       localCollections.push(name);
     }
 
-    if (!Data.db[name]) Data.db.addCollection(name);
+    if (!Data.db[name]) {
+      Data.db.addCollection(name);
+    }
 
     this._collection = Data.db[name];
     this._name = name;
@@ -89,14 +91,16 @@ export class Collection {
     let result;
     let docs;
 
-    if (typeof selector == 'string') {
+    if (typeof selector === 'string') {
       if (options) {
         docs = this._collection.findOne({ _id: selector }, options);
       } else {
         docs = this._collection.get(selector);
       }
 
-      if (docs) docs = [docs];
+      if (docs) {
+        docs = [docs];
+      }
     } else {
       docs = this._collection.find(selector, options);
     }
@@ -120,7 +124,7 @@ export class Collection {
     let id;
 
     if ('_id' in item) {
-      if (!item._id || typeof item._id != 'string') {
+      if (!item._id || typeof item._id !== 'string') {
         return callback('Meteor requires document _id fields to be non-empty strings');
       }
       id = item._id;
@@ -128,11 +132,12 @@ export class Collection {
       id = item._id = Random.id();
     }
 
-    if (this._collection.get(id))
+    if (this._collection.get(id)) {
       return callback({
         error: 409,
         reason: `Duplicate key _id with value ${id}`,
       });
+    }
 
     this._collection.upsert(item);
 
@@ -153,15 +158,16 @@ export class Collection {
   }
 
   update(id, modifier, options = {}, callback = () => {}) {
-    if (typeof options == 'function') {
+    if (typeof options === 'function') {
       callback = options;
     }
 
-    if (!this._collection.get(id))
+    if (!this._collection.get(id)) {
       return callback({
         error: 409,
         reason: `Item not found in collection ${this._name} with id ${id}`,
       });
+    }
 
     // change mini mongo for optimize UI changes
     this._collection.upsert({ _id: id, ...modifier.$set });
@@ -204,7 +210,9 @@ export class Collection {
   helpers(helpers) {
     let _transform;
 
-    if (this._transform && !this._helpers) _transform = this._transform;
+    if (this._transform && !this._helpers) {
+      _transform = this._transform;
+    }
 
     if (!this._helpers) {
       this._helpers = function Document(doc) {
@@ -224,7 +232,7 @@ export class Collection {
   }
 }
 
-//From Meteor core
+// From Meteor core
 
 // Wrap a transform function to return objects that have the _id field
 // of the untransformed document. This ensures that subsystems such as
@@ -236,10 +244,14 @@ export class Collection {
 //   original _id field
 // - If the return value doesn't have an _id field, add it back.
 function wrapTransform(transform) {
-  if (!transform) return null;
+  if (!transform) {
+    return null;
+  }
 
   // No need to doubly-wrap transforms.
-  if (transform.__wrappedTransform__) return transform;
+  if (transform.__wrappedTransform__) {
+    return transform;
+  }
 
   const wrapped = function (doc) {
     if (!_.has(doc, '_id')) {

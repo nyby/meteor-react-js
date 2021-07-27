@@ -1,5 +1,5 @@
 import Data from '../Data';
-import { hashPassword } from '../../lib/utils';
+import { hashPassword } from '../lib/utils';
 import Mongo from '../Mongo';
 import Meteor from '../Meteor.js';
 

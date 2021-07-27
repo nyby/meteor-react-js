@@ -42,9 +42,8 @@ export default class DDP extends EventEmitter {
       if (this.status === 'connected') {
         this.socket.send(message);
         return true;
-      } else {
-        return false;
       }
+      return false;
     });
 
     this.socket = new Socket(options.SocketConstructor, options.endpoint);
@@ -106,9 +105,9 @@ export default class DDP extends EventEmitter {
     const id = uniqueId();
     this.messageQueue.push({
       msg: 'method',
-      id: id,
+      id,
       method: name,
-      params: params,
+      params,
     });
     return id;
   }
@@ -117,9 +116,9 @@ export default class DDP extends EventEmitter {
     const id = uniqueId();
     this.messageQueue.push({
       msg: 'sub',
-      id: id,
-      name: name,
-      params: params,
+      id,
+      name,
+      params,
     });
     return id;
   }
@@ -127,7 +126,7 @@ export default class DDP extends EventEmitter {
   unsub(id) {
     this.messageQueue.push({
       msg: 'unsub',
-      id: id,
+      id,
     });
     return id;
   }

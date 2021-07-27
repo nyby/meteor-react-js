@@ -1,7 +1,7 @@
 import Data from '../Data';
 import call from '../Call';
 import User from './User';
-import { hashPassword } from '../../lib/utils';
+import { hashPassword } from '../lib/utils';
 import Meteor from '../Meteor.js';
 
 function info(msg) {

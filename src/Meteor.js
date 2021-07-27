@@ -1,7 +1,7 @@
 import Tracker from './Tracker';
 import EJSON from 'ejson';
-import DDP from '../lib/ddp.js';
-import Random from '../lib/Random';
+import DDP from './lib/ddp.js';
+import Random from './lib/Random';
 
 import Data from './Data';
 import Mongo from './Mongo';

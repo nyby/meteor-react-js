@@ -1,8 +1,9 @@
 {
   "name": "meteor-react-js",
-  "version": "1.1.22",
+  "version": "1.1.23",
   "description": "Full Meteor Client for React JS",
-  "main": "src/index.js",
+  "main": "dist/index.js",
+  "types": "src/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/nyby/meteor-react-js.git"
@@ -16,7 +17,9 @@
   "license": "MIT",
   "homepage": "https://github.com/nyby/meteor-react-js.git",
   "scripts": {
-    "format": "./node_modules/.bin/prettier --write '{src,lib,test}/**/*.js*'"
+    "format": "./node_modules/.bin/prettier --write '{src,lib,test}/**/*.js*'",
+    "build": "rm -rf dist && npx babel src --out-dir dist",
+    "publish": "yarn build && npm publish"
   },
   "dependencies": {
     "@babel/runtime": "^7.9.6",
@@ -32,7 +35,9 @@
     "wolfy87-eventemitter": "^5.2.9"
   },
   "devDependencies": {
-    "@babel/core": "^7.14.5",
+    "@babel/cli": "^7.14.8",
+    "@babel/core": "^7.14.8",
+    "@babel/preset-env": "^7.14.8",
     "@babel/preset-react": "^7.14.5",
     "chai": "^4.3.4",
     "husky": "^6.0.0",

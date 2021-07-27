@@ -13,7 +13,7 @@ export function hashPassword(password) {
   };
 }
 
-//From Meteor core
+// From Meteor core
 var class2type = {};
 
 var toString = class2type.toString;
@@ -23,20 +23,19 @@ var hasOwn = class2type.hasOwnProperty;
 var support = {};
 
 // Populate the class2type map
-_.each('Boolean Number String Function Array Date RegExp Object Error'.split(' '), function (name, i) {
+_.each('Boolean Number String Function Array Date RegExp Object Error'.split(' '), function (name, _i) {
   class2type['[object ' + name + ']'] = name.toLowerCase();
 });
 
 function type(obj) {
-  if (obj == null) {
-    return obj + '';
+  if (obj === null) {
+    return String(obj);
   }
   return typeof obj === 'object' || typeof obj === 'function' ? class2type[toString.call(obj)] || 'object' : typeof obj;
 }
 
 function isWindow(obj) {
-  /* jshint eqeqeq: false */
-  return obj != null && obj == obj.window;
+  return obj !== null && obj === obj.window;
 }
 
 export function isPlainObject(obj) {
