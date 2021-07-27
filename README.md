@@ -1,17 +1,18 @@
 # Meteor React JS
 
-This package is based on the `@meteorrn/core` package for React Native. I just made some 
-little adjustments to make it work in the browser. All credits for the awesome work should 
-go to the maintainers of the original package for React Native. Feel free to comment, 
-contribute and fix. A hook version called `Meteor.useTracker` is also available.
+This package is based on the `@meteorrn/core` package for React Native. 
+Some little adjustments to make it work in the browser. All credits for the 
+awesome work should go to the maintainers of the original package for React Native. 
+Feel free to comment, contribute and fix. A hook version 
+called `Meteor.useTracker` is also available.
 
-A set of packages allowing you to connect your React app to your Meteor server, and take advantage 
-of Meteor-specific features like accounts, reactive data trackers, etc. Compatible with the 
-latest version of React.
+A set of packages allowing you to connect your React app to your Meteor server, 
+and take advantage of Meteor-specific features like accounts, reactive data 
+trackers, etc. Compatible with the latest version of React.
 
 [Full API Documentation](/docs/api.md)
 
-# Installation
+## Installation
 
 ~~~
 npx create-react-app my-app --template typescript
@@ -19,15 +20,16 @@ cd my-app
 npm install --save meteor-react-js
 ~~~
 
-# Basic Usage
+## Basic Usage
 
 ```javascript
 import Meteor from 'meteor-react-js';
 
-// "mycol" should match the name of the collection on your meteor server, or pass null for a local collection
+// "mycol" should match the name of the collection on your meteor server
 let MyCol = new Meteor.Mongo.Collection('mycol');
 
-Meteor.connect('wss://myapp.meteor.com/websocket'); // Note the /websocket after your URL
+// Note the /websocket after your URL
+Meteor.connect('wss://myapp.meteor.com/websocket'); 
 
 class App extends React.Component {
   render() {
@@ -53,7 +55,7 @@ let AppContainer = Meteor.withTracker(() => {
 export default AppContainer;
 ```
 
-# Custom hooks
+## Custom hooks
 
 There are also custom hooks for managing subscriptions and calling Meteor methods implemented.
 
