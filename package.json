@@ -18,8 +18,7 @@
   "homepage": "https://github.com/nyby/meteor-react-js.git",
   "scripts": {
     "format": "./node_modules/.bin/prettier --write '{src,lib,test}/**/*.js*'",
-    "build": "rm -rf dist && npx babel src --out-dir dist && cp src/index.d.ts dist/index.d.ts",
-    "publish": "yarn build && npm publish"
+    "prepare": "rm -rf dist && npx babel src --out-dir dist && cp src/index.d.ts dist/index.d.ts"
   },
   "dependencies": {
     "@babel/runtime": "^7.9.6",
