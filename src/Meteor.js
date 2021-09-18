@@ -357,7 +357,7 @@ const Meteor = {
       subscriptionId: id,
     };
 
-    if (Tracker.active) {
+    /* if (Tracker.active) {
       // We're in a reactive computation, so we'd like to unsubscribe when the
       // computation is invalidated... but not if the rerun just re-subscribes
       // to the same subscription!  When a rerun happens, we use onInvalidate
@@ -381,7 +381,7 @@ const Meteor = {
           }
         });
       });
-    }
+    } */
     return handle;
   },
 };
