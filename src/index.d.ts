@@ -50,7 +50,7 @@ export declare const Meteor: {
   call<T>(name: string, ...args: any[]): T;
   subscribe(name: string, ...args: any[]): { stop(): void; ready(): boolean };
   withTracker(options: Record<string, any>): any;
-  useTracker(trackerFn: () => any, deps: any[]): any;
+  useTracker(trackerFn: () => any, deps?: any[]): any;
 
   Mongo: {
     Collection: {
