@@ -1,5 +1,5 @@
 import ReactDOM from 'react-dom';
-import minimongo from 'minimongo-cache';
+import minimongo from '@nyby/minimongo';
 import Tracker from './Tracker';
 import setImmediate from 'set-immediate-shim';
 

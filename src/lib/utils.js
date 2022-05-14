@@ -1,5 +1,5 @@
 import SHA256 from 'crypto-js/sha256';
-import _ from 'underscore';
+import _ from 'lodash';
 
 var i = 0;
 export function uniqueId() {
@@ -23,7 +23,7 @@ var hasOwn = class2type.hasOwnProperty;
 var support = {};
 
 // Populate the class2type map
-_.each('Boolean Number String Function Array Date RegExp Object Error'.split(' '), function (name, _i) {
+_.forEach('Boolean Number String Function Array Date RegExp Object Error'.split(' '), function (name, _i) {
   class2type['[object ' + name + ']'] = name.toLowerCase();
 });
 

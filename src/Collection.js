@@ -1,6 +1,6 @@
 import Tracker from './Tracker';
 import EJSON from 'ejson';
-import _ from 'underscore';
+import _ from 'lodash';
 
 import Data from './Data';
 import Random from './lib/Random';
@@ -226,7 +226,7 @@ export class Collection {
       };
     }
 
-    _.each(helpers, (helper, key) => {
+    _.forEach(helpers, (helper, key) => {
       this._helpers.prototype[key] = helper;
     });
   }
