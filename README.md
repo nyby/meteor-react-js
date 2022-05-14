@@ -15,13 +15,13 @@ trackers, etc. Compatible with the latest version of React.
 ## Installation
 
 ~~~
-npm install --save meteor-react-js
+npm install --save @nyby/meteor-react-js
 ~~~
 
 ## Basic Usage
 
 ```javascript
-import Meteor from 'meteor-react-js';
+import Meteor from '@nyby/meteor-react-js';
 
 // "mycol" should match the name of the collection on your meteor server
 let MyCol = new Meteor.Mongo.Collection('mycol');
