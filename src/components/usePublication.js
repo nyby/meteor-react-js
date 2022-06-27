@@ -59,6 +59,8 @@ export default function ({ name, params = {}, userId, fetch = () => null }, depe
     deps
   );
 
+  const formatError = ({ error, reason }) => (error ? { error, reason } : null);
+
   return useTracker(() => {
     if (!allArgsSet) {
       return [undefined, false, false];
@@ -68,15 +70,16 @@ export default function ({ name, params = {}, userId, fetch = () => null }, depe
     if (!ref.current.subs[id]) {
       ref.current.subs[id] = sub;
     }
-    const result = fetch();
+    const result = !sub.error() ? fetch() : undefined;
     if (Meteor.isVerbose()) {
       const p = JSON.stringify(params);
       const d = JSON.stringify(deps);
       const r = sub.ready();
-      info(`Ready=${r} ${name}(${p})${d}, refId=${ref.current.id}`);
+      const e = JSON.stringify(formatError(sub.error() ?? {}));
+      info(`Ready=${r} ${name}(${p})${d}, error=${e}, refId=${ref.current.id}`);
     }
-    const isLoading = !sub.ready() && !result;
-    const notFound = sub.ready() && !result;
-    return [result, isLoading, notFound];
+    const isLoading = !sub.error() && !sub.ready() && result !== undefined;
+    // console.log({ name, result, isLoading, error: sub.error() });
+    return [result, isLoading, sub.error()];
   }, deps);
 }

@@ -22,8 +22,12 @@ function debugSub(name, params) {
   return `"${name}"(${args})`;
 }
 
-function info(msg) {
-  console.info(`DDP: ${msg}`);
+function info(msg, ...rest) {
+  console.info(`DDP: ${msg}`, ...rest);
+}
+
+function warn(msg, ...rest) {
+  console.warn(`DDP: ${msg}`, ...rest);
 }
 
 const Meteor = {
@@ -240,7 +244,19 @@ const Meteor = {
       for (const i of Object.keys(Data.subscriptions)) {
         const sub = Data.subscriptions[i];
         if (sub.subIdRemember === message.id) {
-          console.warn('DDP: No subscription existing for', sub.name);
+          if (message.error) {
+            sub.error = message.error;
+            sub.ready = true;
+            sub.readyDeps.changed();
+            sub.readyCallback && sub.readyCallback();
+            if (isVerbose) {
+              warn('Subscription returned error for', sub.name);
+            }
+          } else {
+            if (isVerbose) {
+              info('Stop subscription for', sub.name);
+            }
+          }
         }
       }
     });
@@ -325,6 +341,7 @@ const Meteor = {
         readyDeps: new Tracker.Dependency(),
         readyCallback: callbacks.onReady,
         stopCallback: callbacks.onStop,
+        error: null,
         stop() {
           Data.ddp.unsub(this.subIdRemember);
           delete Data.subscriptions[this.id];
@@ -353,6 +370,12 @@ const Meteor = {
         const record = Data.subscriptions[id];
         record.readyDeps.depend();
         return record.ready;
+      },
+      error() {
+        if (!Data.subscriptions[id]) {
+          return null;
+        }
+        return Data.subscriptions[id].error ?? null;
       },
       subscriptionId: id,
     };

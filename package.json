@@ -1,6 +1,6 @@
 {
   "name": "@nyby/meteor-react-js",
-  "version": "1.1.28",
+  "version": "1.1.29",
   "description": "Full Meteor Client for React JS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

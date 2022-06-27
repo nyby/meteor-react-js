@@ -41,7 +41,7 @@ export interface IData {
 export type Status = 'change' | 'connected' | 'disconnected' | 'loggingIn';
 
 export declare const Meteor: {
-  usePublication<T>(publication: IUsePublication, dependencies?: any[]): [T, boolean, boolean];
+  usePublication<T>(publication: IUsePublication, dependencies?: any[]): [T, boolean, IMeteorError | null];
   useMethod<T>(
     name: string,
     args?: Record<string, any>,
@@ -51,6 +51,7 @@ export declare const Meteor: {
   subscribe(name: string, ...args: any[]): { stop(): void; ready(): boolean };
   withTracker(options: Record<string, any>): any;
   useTracker(trackerFn: () => any, deps?: any[]): any;
+  enableVerbose(): void;
 
   Mongo: {
     Collection: {
