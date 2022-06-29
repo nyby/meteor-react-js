@@ -78,8 +78,8 @@ export default function ({ name, params = {}, userId, fetch = () => null }, depe
       const e = JSON.stringify(formatError(sub.error() ?? {}));
       info(`Ready=${r} ${name}(${p})${d}, error=${e}, refId=${ref.current.id}`);
     }
-    const isLoading = !sub.error() && !sub.ready() && result !== undefined;
-    // console.log({ name, result, isLoading, error: sub.error() });
-    return [result, isLoading, sub.error()];
+    const loading = !sub.ready();
+    // console.log({ name, result, loading, error: sub.error() });
+    return [result, loading, sub.error()];
   }, deps);
 }
