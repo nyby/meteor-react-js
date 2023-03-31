@@ -5,7 +5,7 @@
  * @author Nyby
  */
 
-import { isObject } from 'lodash';
+import { isObject } from 'lodash-es';
 import { useEffect, useRef } from 'react';
 import Random from '../lib/Random';
 import Pub from '../lib/Pub';

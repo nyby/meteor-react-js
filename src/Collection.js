@@ -1,6 +1,6 @@
 import Tracker from './Tracker';
 import EJSON from 'ejson';
-import _ from 'lodash';
+import { extend, forEach, has } from 'lodash-es';
 
 import Data from './Data';
 import Random from './lib/Random';
@@ -216,7 +216,7 @@ export class Collection {
 
     if (!this._helpers) {
       this._helpers = function Document(doc) {
-        return _.extend(this, doc);
+        return extend(this, doc);
       };
       this._transform = (doc) => {
         if (_transform) {
@@ -226,7 +226,7 @@ export class Collection {
       };
     }
 
-    _.forEach(helpers, (helper, key) => {
+    forEach(helpers, (helper, key) => {
       this._helpers.prototype[key] = helper;
     });
   }
@@ -254,7 +254,7 @@ function wrapTransform(transform) {
   }
 
   const wrapped = function (doc) {
-    if (!_.has(doc, '_id')) {
+    if (!has(doc, '_id')) {
       // XXX do we ever have a transform on the oplog's collection? because that
       // collection has no _id.
       throw new Error('can only transform documents with _id');
@@ -270,7 +270,7 @@ function wrapTransform(transform) {
       throw new Error('transform must return object');
     }
 
-    if (_.has(transformed, '_id')) {
+    if (has(transformed, '_id')) {
       if (!EJSON.equals(transformed._id, id)) {
         throw new Error("transformed document can't have different _id");
       }

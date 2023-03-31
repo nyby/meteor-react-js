@@ -20,7 +20,7 @@ describe('ddp', function () {
   it('should throw an error if not passed a socketConstructor', function () {
     (function () {
       let ddp = new DDP({});
-    }.should.throw(Error));
+    }).should.throw(Error);
   });
 
   it('should throw an error given no endpoint', function () {
@@ -28,7 +28,7 @@ describe('ddp', function () {
       let ddp = new DDP({
         SocketConstructor: WebSocket,
       });
-    }.should.throw(Error));
+    }).should.throw(Error);
   });
 
   it('should start in the disconnected state', function () {

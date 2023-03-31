@@ -1,6 +1,6 @@
 {
   "name": "@nyby/meteor-react-js",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Full Meteor Client for React JS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,22 +21,22 @@
     "prepare": "rm -rf dist && npx babel src --out-dir dist && cp src/index.d.ts dist/index.d.ts"
   },
   "dependencies": {
-    "@babel/runtime": "^7.17.9",
     "@nyby/minimongo": "^0.0.51",
     "base-64": "^1.0.0",
     "crypto-js": "^4.1.1",
     "ejson": "^2.2.2",
-    "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "node-require-fallback": "^1.0.0",
     "prop-types": "^15.8.1",
     "set-immediate-shim": "^2.0.0",
     "wolfy87-eventemitter": "^5.2.9"
   },
   "devDependencies": {
-    "@babel/cli": "^7.17.10",
-    "@babel/core": "^7.17.10",
-    "@babel/preset-env": "^7.17.10",
-    "@babel/preset-react": "^7.16.7",
+    "@babel/cli": "^7.18.6",
+    "@babel/core": "^7.18.6",
+    "@babel/preset-env": "^7.18.6",
+    "@babel/preset-react": "^7.18.6",
+    "@babel/runtime": "^7.18.6",
     "chai": "^4.3.6",
     "husky": "^8.0.1",
     "lint-staged": "^12.4.1",
