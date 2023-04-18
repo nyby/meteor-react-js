@@ -1,6 +1,6 @@
 const UNMISTAKABLE_CHARS = '23456789ABCDEFGHJKLMNPQRSTWXYZabcdefghijkmnopqrstuvwxyz';
 
-export default {
+module.exports = {
   id(count = 17) {
     let res = '';
     for (let i = 0; i < count; i++) {
