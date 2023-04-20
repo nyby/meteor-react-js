@@ -1,5 +1,5 @@
 import SHA256 from 'crypto-js/sha256';
-import { forEach } from 'lodash-es';
+import { forEach } from 'lodash';
 
 var i = 0;
 export function uniqueId() {

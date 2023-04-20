@@ -5,7 +5,7 @@
  * @author Nyby
  */
 
-import { findKey, uniq } from 'lodash-es';
+import { findKey, uniq } from 'lodash';
 import Meteor from '../Meteor';
 import EJSON from 'ejson';
 

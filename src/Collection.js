@@ -1,6 +1,6 @@
 import Tracker from './Tracker';
 import EJSON from 'ejson';
-import { extend, forEach, has } from 'lodash-es';
+import { extend, forEach, has } from 'lodash';
 
 import Data from './Data';
 import Random from './lib/Random';

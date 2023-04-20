@@ -25,7 +25,7 @@
     "base-64": "^1.0.0",
     "crypto-js": "^4.1.1",
     "ejson": "^2.2.2",
-    "lodash-es": "^4.17.21",
+    "lodash": "^4.17.21",
     "node-require-fallback": "^1.0.0",
     "prop-types": "^15.8.1",
     "set-immediate-shim": "^2.0.0",

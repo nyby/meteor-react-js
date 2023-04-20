@@ -30,7 +30,7 @@ function warn(msg, ...rest) {
   console.warn(`DDP: ${msg}`, ...rest);
 }
 
-const Meteor = {
+export const Meteor = {
   isVerbose() {
     return isVerbose;
   },

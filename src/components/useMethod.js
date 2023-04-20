@@ -8,7 +8,7 @@
 import { useEffect, useState } from 'react';
 
 import Meteor from '../Meteor';
-import { isObject } from 'lodash-es';
+import { isObject } from 'lodash';
 
 function depsFromValuesOf(params) {
   if (isObject(params)) {
