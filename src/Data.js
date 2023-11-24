@@ -1,7 +1,8 @@
 import ReactDOM from 'react-dom';
-import minimongo from '@nyby/minimongo';
+import minimongo from '@meteorrn/minimongo';
 import Tracker from './Tracker';
 import setImmediate from 'set-immediate-shim';
+import process from "process/browser";
 
 process.nextTick = setImmediate;
 
