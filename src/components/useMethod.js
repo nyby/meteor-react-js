@@ -5,10 +5,10 @@
  * @author Nyby
  */
 
-import {useEffect, useRef, useState} from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Random from '../lib/Random';
 import Meteor from '../Meteor';
-import {isObject} from 'lodash-es';
+import { isObject } from 'lodash';
 
 function depsFromValuesOf(params) {
   if (isObject(params)) {
