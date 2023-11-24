@@ -26,7 +26,7 @@ function info(msg) {
 
 export default (name, args = {}, dependencies) => {
   const deps = dependencies || [Meteor.userId(), ...depsFromValuesOf(args)];
-  const [state, setState] = useState({ result: null, loading: true, err: null, fetching: false });
+  const [state, setState] = useState({ result: null, loading: true, err: null });
   const ref = useRef(null);
   const allArgsSet = !Object.values(args).some((x) => x === undefined);
   let p, d;
@@ -44,24 +44,23 @@ export default (name, args = {}, dependencies) => {
       if (Meteor.isVerbose()) {
         info(`Args not all set ${name}(${p})${d}`);
       }
-      setState({ result: null, loading: false, err: null, fetching: false });
+      setState({ result: null, loading: false, err: null });
     } else {
+      if (Meteor.isVerbose()) {
+        info(`Calling ${name}(${p})${d}, err=null, loading=true, refId=${ref.current.id}`);
+      }
+      setState({ err: null, result: null, loading: true,  });
       Meteor.call(name, args, (err, result) => {
         if (err) {
           console.log(err);
         }
         if (mounted) {
           if (Meteor.isVerbose()) {
-            info(`Returned ${name}(${p})${d}, err=${err}, loading=false, fetching=false, refId=${ref.current.id}`);
+            info(`Returned ${name}(${p})${d}, err=${err}, loading=false, refId=${ref.current.id}`);
           }
-          setState({ err, result, loading: false, fetching: false });
+          setState({ err, result, loading: false,  });
         }
       });
-      const loading = !Boolean(state.result);
-      if (Meteor.isVerbose()) {
-        console.log(`Calling ${name}(${p})${d}, err=null, loading=${loading}, fetching=true, refId=${ref.current.id}`);
-      }
-      setState({ err: null, result: state.result, loading, fetching: true });
     }
     return () => {
       mounted = false;

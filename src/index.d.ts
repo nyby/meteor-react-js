@@ -46,7 +46,7 @@ export declare const Meteor: {
     name: string,
     args?: Record<string, any>,
     deps?: any[]
-  ): { result: T; loading: boolean; err?: IMeteorError; fetching: boolean };
+  ): { result: T; loading: boolean; err?: IMeteorError };
   call<T>(name: string, ...args: any[]): T;
   subscribe(name: string, ...args: any[]): { stop(): void; ready(): boolean };
   withTracker(options: Record<string, any>): any;
